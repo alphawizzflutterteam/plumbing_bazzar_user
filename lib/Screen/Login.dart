@@ -338,13 +338,14 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
     );
 
     print(getVerifyUserApi);
-    print("sdfsfsfsdffdsffffffffffffffffff${response.body}");
+    print("sdfsfsfsdffd11111111111111111111111sffffffffffffffffff${response.body}");
     print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
     var getdata = json.decode(response.body);
     bool? error = getdata["error"];
     String? msg = getdata["message"];
     await buttonController!.reverse();
 
+    setSnackbar(msg.toString());
     SettingProvider settingsProvider =
         Provider.of<SettingProvider>(context, listen: false);
    /* String otp = getdata["data"]["id"];
@@ -352,7 +353,14 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
     String otp = getdata["data"]["id"];
     String id = getdata["data"]["id"]; // Assuming ID is in the same field
     CUR_USERID = id;
+    var i = getdata["data"];
+    id = i[ID];
+    username = i[USERNAME];
+    mobile = i[MOBILE];
 
+    context.read<SettingProvider>().saveUserDetail(id!, username, email, mobile, city, area,
+        address, pincode, latitude, longitude, "", context);
+    print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq${username}gvjhgvhgvh${email}");
 // Save to SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('CUR_USERID', CUR_USERID!);
@@ -821,11 +829,11 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
                 ));
               },
               child: Text(
-                getTranslated(context, 'SIGN_UP_LBL')!,
+                "Register Now",
                 style: Theme.of(context).textTheme.caption!.copyWith(
-                      color: Theme.of(context).colorScheme.fontColor,
+                      color: ColorResources.buttonColor,
                       decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,fontFamily: "opensans",
                       fontSize: 16,
                     ),
               ))
@@ -869,7 +877,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
 
   Widget setCodeWithMono() {
     return Container(
-        width: deviceWidth! * 0.8,
+        width: deviceWidth! * 0.9,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -1026,7 +1034,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset:
-          true, // ✅ allow screen resize when keyboard opens
+          true,
       key: _scaffoldKey,
       body: _isNetworkAvail
           ? SafeArea(
@@ -1046,13 +1054,13 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
                           child: _subLogo(),
                         ),
                         Positioned(
-                          top: 90,
+                          top: 80,
                           left: 0,
                           right: 0,
                           child: welcomeEshopTxt(),
                         ),
                         Positioned(
-                          top: 500,
+                          top: 420,
                           left: 0,
                           right: 0,
                           child: getLoginContainer(),
@@ -1111,7 +1119,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
     final mediaQuery = MediaQuery.of(context);
 
     return Positioned.directional(
-      top: 460,
+      top: 440,
       // start: mediaQuery.size.width * 0.5,
       textDirection: Directionality.of(context),
       // top: mediaQuery.size.height * 0.2,
@@ -1123,21 +1131,21 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
               // bottom: mediaQuery.viewInsets.bottom * 0.8,
               // left: 16,
               // right: 16,
-              top: 24,
+              // top: 24,
             ),
             height: mediaQuery.size.height * 0.4,
             width: mediaQuery.size.width,
             decoration: BoxDecoration(
               color: ColorResources.secondary, // 🔵 Blue background
               borderRadius: BorderRadius.circular(30), // 🎯 Rounded corners
-              boxShadow: [
+           /*   boxShadow: [
                 BoxShadow(
                   color: Colors.black26, // darker shadow for depth
                   offset: Offset(0, 8),
                   blurRadius: 25,
                   spreadRadius: 2,
                 ),
-              ],
+              ],*/
             ),
             child: Form(
               key: _formkey,

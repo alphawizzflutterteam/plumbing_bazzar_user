@@ -270,8 +270,9 @@ class _EditProfileState extends State<EditProfile> {
 
                                   UpdateUserModels? model =
                                       await updateUserDetails(userName,
-                                          "1010101010", email, updateDOB,
+                                          mobileNumber, email, updateDOB,
                                           context: context);
+
                                   if (model!.error == false) {
                                     setState(() {
                                       showToast(model.message);
@@ -445,7 +446,7 @@ class _EditProfileState extends State<EditProfile> {
                                     label: Text("${user!.date![0].username}")),
                               ),
                               TextField(
-                                readOnly: true,
+                                // readOnly: true,
                                 controller: userNumberController,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(

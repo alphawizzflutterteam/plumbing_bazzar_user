@@ -13,5 +13,5 @@ final String baseUrl = 'https://plumbing-new.alphawizzserver.com/app/v1/api/';
 // final String baseUrl = 'https://plumbingbazzar.com/app/v1/api/';
 // final String baseUrl = 'http://new-ecom.developmentalphawizz.com/app/v1/api/';
 // final String baseUrl = 'https://mytop10store.com/app/v1/api/';
-final String imageUrl = 'https://plumbingbazzar.com/';
+final String imageUrl = 'https://plumbing-new.alphawizzserver.com/';
 final String jwtKey = "e1e421dceee9ea718ab764ea4fdef95629e7f415";

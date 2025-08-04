@@ -18,6 +18,7 @@ extension colors on ColorScheme {
   );
 
   static const Color primary = Color(0xff01ADEF);
+  static const Color grey = Colors.grey;
   static const Color secondary = Color(0xffE9F9FF);
 
   Color get btnColor =>

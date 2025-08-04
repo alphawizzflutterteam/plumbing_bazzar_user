@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:get/get.dart' as getx;
+import 'package:Plumbingbazzar/Screen/pop_up_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:Plumbingbazzar/Helper/ApiBaseHelper.dart';
 import 'package:Plumbingbazzar/Helper/AppBtn.dart';
@@ -25,6 +27,7 @@ import 'package:Plumbingbazzar/Screen/SubCategory.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart';
 // import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +37,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:version/version.dart';
 import 'package:video_player/video_player.dart';
 import '../Model/homescreen_category.dart';
+import '../Model/offer_categories.dart';
+import '../Model/offer_categories.dart';
 import 'Login.dart';
 import 'ProductList.dart';
 import 'Product_Detail.dart';
@@ -55,9 +60,10 @@ List<Product> sellerList = [];
 int count = 1;
 List<Data> homeSliderList = [];
 List<Widget> pages = [];
-
 class _HomePageState extends State<HomePage>
-    with AutomaticKeepAliveClientMixin<HomePage>, TickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin<HomePage>, TickerProviderStateMixin, WidgetsBindingObserver,RouteAware  {
+/*class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin<HomePage>, TickerProviderStateMixin {*/
   bool _isNetworkAvail = true;
 
   final _controller = PageController();
@@ -77,10 +83,63 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+  /*  final popupController = Get.put(PopupController());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      popupController.setContext(context);
+      popupController.fetchAndStartPopup();
+
+      // 👇 Register to RouteObserver after context is available
+      final ModalRoute? modalRoute = ModalRoute.of(context);
+    });
+*/
     fetchSubCategories();
+    fetchSubCategories1();
+    fetchSubCategories2();
+    offerCatg();
+    callApi();
+
+    buttonController = AnimationController(
+      duration: Duration(seconds: 200),
+      vsync: this,
+    );
+
+    buttonSqueezeanimation = Tween(
+      begin: deviceWidth! * 0.7,
+      end: 50.0,
+    ).animate(
+      CurvedAnimation(
+        parent: buttonController,
+        curve: Interval(0.0, 1.1),
+      ),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _animateSlider());
+  }
+
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // 👈 Remove observer
+    final popupController = Get.find<PopupController>();
+    popupController.stopPopup();
+    super.dispose();
+  }
+
+/*  void initState() {
+    super.initState();
+    final PopupController popupController = Get.put(PopupController());
+
+    // Set context if not already
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      popupController.setContext(context);
+      popupController.fetchAndStartPopup();
+    });
+    fetchSubCategories();
+    offerCatg();
     callApi();
     buttonController = new AnimationController(
-        duration: new Duration(milliseconds: 2000), vsync: this);
+        duration: new Duration(seconds: 200), vsync: this);
 
     buttonSqueezeanimation = new Tween(
       begin: deviceWidth! * 0.7,
@@ -90,17 +149,18 @@ class _HomePageState extends State<HomePage>
         parent: buttonController,
         curve: new Interval(
           0.0,
-          0.150,
+          1.1,
         ),
       ),
     );
 
     WidgetsBinding.instance!.addPostFrameCallback((_) => _animateSlider());
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _isNetworkAvail
           ? RefreshIndicator(
               color: colors.primary,
@@ -123,6 +183,10 @@ class _HomePageState extends State<HomePage>
                     SizedBox(
                       height: 20,
                     ),
+                    mainOffer(),
+                    SizedBox(
+                      height: 20,
+                    ),
                     lineWithText("Sanitary"),
                     _catList(),
                     _section(),
@@ -135,6 +199,57 @@ class _HomePageState extends State<HomePage>
                       height: 10,
                     ),
                     listItem(),
+                    /*--------------------------------SECTION WISE   1-----------------------------------------------------------------*/
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    lineWithText1("Sanitary"),
+                    _catList1(),
+                    _section1(),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    lText("Sanitary"),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    listItem1(),
+                    /*--------------------------------SECTION WISE  2-----------------------------------------------------------------*/
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    lineWithText2("Sanitary"),
+                    _catList2(),
+                    _section2(),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    lText("Sanitary"),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    listItem2(),
+                    /*--------------------------------SECTION WISE-----------------------------------------------------------------*/
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    lineWithText1("Sanitary"),
+                    _catList1(),
+                    _section1(),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    lText("Sanitary"),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    listItem1(),
                     // _section1(),
                     // _seller()
                   ],
@@ -144,6 +259,173 @@ class _HomePageState extends State<HomePage>
           : noInternet(context),
     );
   }
+
+
+  Timer? popupTimer;
+  String? imageUrl;
+  bool _isDialogShowing = false;
+/*  Future<String?> fetchImageUrl() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://plumbing-new.alphawizzserver.com/app/v1/api/get_popup_images'),
+      );
+      print("Image URL Response: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // Check for list and first image
+        if (data['data'] != null &&
+            data['data'] is List &&
+            data['data'].isNotEmpty &&
+            data['data'][0]['image'] != null) {
+          return data['data'][0]['image'];
+        } else {
+          print("No image found in API response");
+          return null;
+        }
+      } else {
+        print("Failed to fetch image URL: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("Error fetching image URL: $e");
+      return null;
+    }
+  }
+
+
+  void fetchAndStartPopup() async {
+    if (popupTimer != null && popupTimer!.isActive) return;
+
+    imageUrl = await fetchImageUrl();
+
+    if (imageUrl != null && imageUrl!.isNotEmpty && mounted) {
+      Future.delayed(Duration(seconds: 2), () {
+        if (mounted) {
+          popupTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+            if (mounted && !_isDialogShowing) {
+              showImagePopup();
+            } else if (!mounted) { // If the widget is not mounted, cancel the timer
+              timer.cancel();
+            }
+          });
+        }
+      });
+    }
+  }
+
+
+  void showImagePopup() {
+    if (!mounted || _isDialogShowing) {
+      print("Cannot show popup - Mounted: $mounted, Dialog showing: $_isDialogShowing");
+      return;
+    }
+
+    _isDialogShowing = true;
+    print('Showing image popup with URL: $imageUrl');
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)
+          ),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.9,
+              maxHeight: MediaQuery.of(context).size.height*91/100,
+            ),
+            // padding: EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Close button
+              *//*  Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),*//*
+                // Image
+                Flexible(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.98,
+                    height: MediaQuery.of(context).size.height * 0.23,
+                    child: Stack(
+                      children: [
+                        // The image
+                        Positioned.fill(
+                          child: Image.network(
+                            imageUrl!,
+                            fit: BoxFit.fill,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              print("Error loading image: $error");
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.error, size: 50, color: Colors.red),
+                                    Text("Failed to load image"),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        // Cross icon
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: () => Navigator.of(context).pop(), // close the dialog
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(6),
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((_) {
+      // Reset the flag when dialog is dismissed
+      _isDialogShowing = false;
+      print('Dialog dismissed, _isDialogShowing reset to false');
+    });
+  }*/
+
 
   Future<Null> _refresh() {
     context.read<HomeProvider>().setCatLoading(true);
@@ -248,7 +530,7 @@ class _HomePageState extends State<HomePage>
                           },
                         ),
 
-                        /*  Positioned(
+                       /*   Positioned(
                         top: 150,
                         left: 0,
                         right: 0,
@@ -772,6 +1054,291 @@ class _HomePageState extends State<HomePage>
                             ),
                           );*/
   }
+  _getSection1() {
+    print('PrintData____}_____');
+    var orient = MediaQuery.of(context).orientation;
+
+    return /*products[i] == DEFAULT*/
+         Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: GridView.count(
+              // mainAxisSpacing: 12,
+              // crossAxisSpacing: 12,
+              padding: EdgeInsetsDirectional.only(top: 5),
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              childAspectRatio: 0.950,
+
+              //  childAspectRatio: 1.0,
+              physics: NeverScrollableScrollPhysics(),
+              children:
+                  //  [
+                  //   Container(height: 500, width: 1200, color: Colors.red),
+                  //   Text("hello"),
+                  //   Container(height: 10, width: 50, color: Colors.green),
+                  // ]
+                  List.generate(
+                    products1.length,
+                    // products.length < 4
+                    //                   ? products.length
+                    //                   : 4,
+                (index) {
+                  print('PrintData____qqqqqqqqq${products1.length}_____');
+                  // return Container(
+                  //   width: 600,
+                  //   height: 50,
+                  //   color: Colors.red,
+                  // );
+
+                  return
+                    BranndproductItem1(
+                      products1[index]);
+                  // return productItem(i, index, index % 2 == 0 ? true : false);
+                },
+              ),
+            ),
+          );
+        /* products[i] == STYLE1
+            ? products.length > 0
+                ? Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      children: [
+                        Flexible(
+                          flex: 3,
+                          fit: FlexFit.loose,
+                          child: Container(
+                            height: orient == Orientation.portrait
+                                ? deviceHeight! * 0.4
+                                : deviceHeight!,
+                            child: BranndproductItem(i, 0, true),
+                          ),
+                        ),
+                        // child: productItem(i, 0, true),),),
+                        Flexible(
+                          flex: 2,
+                          fit: FlexFit.loose,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                height: orient == Orientation.portrait
+                                    ? deviceHeight! * 0.2
+                                    : deviceHeight! * 0.5,
+                                child: BranndproductItem(i, 1, false),
+                              ),
+                              // child: productItem(i, 1, false),),
+                              Container(
+                                height: orient == Orientation.portrait
+                                    ? deviceHeight! * 0.2
+                                    : deviceHeight! * 0.5,
+                                child: BranndproductItem(i, 2, false),
+                              ),
+                              // child: productItem(i, 2, false),),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Container()
+            : products[i] == STYLE2
+                ? Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Row(
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          fit: FlexFit.loose,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                  height: orient == Orientation.portrait
+                                      ? deviceHeight! * 0.2
+                                      : deviceHeight! * 0.5,
+                                  child: BranndproductItem(i, 0, true)),
+                              // child: productItem(i, 0, true)),
+                              Container(
+                                height: orient == Orientation.portrait
+                                    ? deviceHeight! * 0.2
+                                    : deviceHeight! * 0.5,
+                                child: BranndproductItem(i, 1, true),
+                              ),
+                              // child: productItem(i, 1, true),),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          flex: 3,
+                          fit: FlexFit.loose,
+                          child: Container(
+                            height: orient == Orientation.portrait
+                                ? deviceHeight! * 0.4
+                                : deviceHeight,
+                            child: BranndproductItem(i, 2, false),
+                          ),
+                        ),
+                        // child: productItem(i, 2, false),),),
+                      ],
+                    ),
+                  )
+                : sectionList[i].style == STYLE3
+                    ? Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              fit: FlexFit.loose,
+                              child: Container(
+                                height: orient == Orientation.portrait
+                                    ? deviceHeight! * 0.3
+                                    : deviceHeight! * 0.6,
+                                child: BranndproductItem(i, 0, false),
+                              ),
+                            ),
+                            // child: productItem(i, 0, false),),),
+                            Container(
+                              height: orient == Orientation.portrait
+                                  ? deviceHeight! * 0.2
+                                  : deviceHeight! * 0.5,
+                              child: Row(
+                                children: [
+                                  Flexible(
+                                    flex: 1,
+                                    fit: FlexFit.loose,
+                                    child: BranndproductItem(i, 1, true),
+                                  ),
+                                  // child: productItem(i, 1, true),),
+                                  Flexible(
+                                    flex: 1,
+                                    fit: FlexFit.loose,
+                                    child: BranndproductItem(i, 2, true),
+                                  ),
+                                  // child: productItem(i, 2, true),),
+                                  Flexible(
+                                    flex: 1,
+                                    fit: FlexFit.loose,
+                                    child: BranndproductItem(i, 3, false),
+                                  ),
+                                  // child: productItem(i, 3, false),),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : sectionList[i].style == STYLE4
+                        ? Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                    flex: 1,
+                                    fit: FlexFit.loose,
+                                    child: Container(
+                                        height: orient == Orientation.portrait
+                                            ? deviceHeight! * 0.25
+                                            : deviceHeight! * 0.5,
+                                        child: BranndproductItem(i, 0, false))),
+                                // child: productItem(i, 0, false))),
+                                Container(
+                                  height: orient == Orientation.portrait
+                                      ? deviceHeight! * 0.2
+                                      : deviceHeight! * 0.5,
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        flex: 1,
+                                        fit: FlexFit.loose,
+                                        child: BranndproductItem(i, 1, true),
+                                      ),
+                                      // child: productItem(i, 1, true),),
+                                      Flexible(
+                                        flex: 1,
+                                        fit: FlexFit.loose,
+                                        child: BranndproductItem(i, 2, false),
+                                      ),
+                                      // child: productItem(i, 2, false),),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: GridView.count(
+                              padding: EdgeInsetsDirectional.only(top: 5),
+                              crossAxisCount: 2,
+                              shrinkWrap: true,
+                              childAspectRatio: 1.2,
+                              physics: NeverScrollableScrollPhysics(),
+                              mainAxisSpacing: 0,
+                              crossAxisSpacing: 0,
+                              children: List.generate(
+                                sectionList[i].productList!.length < 6
+                                    ? sectionList[i].productList!.length
+                                    : 6,
+                                (index) {
+                                  return BranndproductItem(
+                                      i, index, index % 2 == 0 ? true : false);
+                                  // return productItem(i, index,
+                                  //     index % 2 == 0 ? true : false);
+                                },
+                              ),
+                            ),
+                          );*/
+  }
+  _getSection2() {
+    print('PrintData____}_____');
+    var orient = MediaQuery.of(context).orientation;
+
+    return /*products[i] == DEFAULT*/
+         Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: GridView.count(
+              // mainAxisSpacing: 12,
+              // crossAxisSpacing: 12,
+              padding: EdgeInsetsDirectional.only(top: 5),
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              childAspectRatio: 0.950,
+
+              //  childAspectRatio: 1.0,
+              physics: NeverScrollableScrollPhysics(),
+              children:
+                  //  [
+                  //   Container(height: 500, width: 1200, color: Colors.red),
+                  //   Text("hello"),
+                  //   Container(height: 10, width: 50, color: Colors.green),
+                  // ]
+                  List.generate(
+                    products2.length,
+                    // products.length < 4
+                    //                   ? products.length
+                    //                   : 4,
+                (index) {
+                  print('PrintData____qqqqqqqqq${products2.length}_____');
+                  // return Container(
+                  //   width: 600,
+                  //   height: 50,
+                  //   color: Colors.red,
+                  // );
+
+                  return
+                    BranndproductItem2(
+                      products2[index]);
+                  // return productItem(i, index, index % 2 == 0 ? true : false);
+                },
+              ),
+            ),
+          );
+
+  }
 
   // _getSection1(int i) {
   //   var orient = MediaQuery.of(context).orientation;
@@ -1234,6 +1801,201 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+  Widget BranndproductItem1(CategoryProduct product) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      margin: const EdgeInsets.all(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: () {
+          print('PrintData1111111111____${product.slug}_____');
+          /*Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetail(
+                model: product,
+                secPos: 0,  // optional or remove if not used
+                index: 0,   // optional or remove if not used
+                list: false,
+              ),
+            ),
+          );*/
+           Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductList1(
+                name: product.name,
+                id:product.slug ,
+                  fromSeller: false,
+                tag: false,
+
+
+
+              ),
+            ),
+          );
+         /* Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubCategory(
+                title: product.name,
+                subList: product.,
+              ),
+            ),);*/
+        },
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Hero(
+                tag: "${product.id}",
+                child: FadeInImage(
+                  image: CachedNetworkImageProvider(product.image),
+                  placeholder: placeHolder(deviceWidth! * 0.5),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  imageErrorBuilder: (context, error, stackTrace) =>
+                      erroWidget(deviceWidth! * 0.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget BranndproductItem2(CategoryProduct product) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      margin: const EdgeInsets.all(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: () {
+          print('PrintData1111111111____${product.slug}_____');
+          /*Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetail(
+                model: product,
+                secPos: 0,  // optional or remove if not used
+                index: 0,   // optional or remove if not used
+                list: false,
+              ),
+            ),
+          );*/
+           Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductList1(
+                name: product.name,
+                id:product.slug ,
+                  fromSeller: false,
+                tag: false,
+
+
+
+              ),
+            ),
+          );
+         /* Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubCategory(
+                title: product.name,
+                subList: product.,
+              ),
+            ),);*/
+        },
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Hero(
+                tag: "${product.id}",
+                child: FadeInImage(
+                  image: CachedNetworkImageProvider(product.image),
+                  placeholder: placeHolder(deviceWidth! * 0.5),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  imageErrorBuilder: (context, error, stackTrace) =>
+                      erroWidget(deviceWidth! * 0.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget BranndproductItem3(CategoryProduct product) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      margin: const EdgeInsets.all(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: () {
+          print('PrintData1111111111____${product.slug}_____');
+          /*Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetail(
+                model: product,
+                secPos: 0,  // optional or remove if not used
+                index: 0,   // optional or remove if not used
+                list: false,
+              ),
+            ),
+          );*/
+           Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductList1(
+                name: product.name,
+                id:product.slug ,
+                  fromSeller: false,
+                tag: false,
+
+
+
+              ),
+            ),
+          );
+         /* Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubCategory(
+                title: product.name,
+                subList: product.,
+              ),
+            ),);*/
+        },
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Hero(
+                tag: "${product.id}",
+                child: FadeInImage(
+                  image: CachedNetworkImageProvider(product.image),
+                  placeholder: placeHolder(deviceWidth! * 0.5),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  imageErrorBuilder: (context, error, stackTrace) =>
+                      erroWidget(deviceWidth! * 0.5),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget productItem(int secPos, int index, bool pad) {
     if (sectionList[secPos].productList!.length <= index)
@@ -1608,6 +2370,80 @@ class _HomePageState extends State<HomePage>
       },
     );
   }
+  _section1() {
+    print('PrintData____gfggggggggggggggggg_____');
+    return Selector<HomeProvider, bool>(
+      selector: (_, homeProvider) => homeProvider.secLoading,
+      builder: (context, isLoading, child) {
+        print('PrintDataaaaaaaaa____${products1.length}_____');
+
+        // if (isLoading) {
+        //   return Container(
+        //     width: double.infinity,
+        //     child: Shimmer.fromColors(
+        //       baseColor: Theme.of(context).colorScheme.simmerBase,
+        //       highlightColor: Theme.of(context).colorScheme.simmerHigh,
+        //       child: sectionLoading(),
+        //     ),
+        //   );
+        // }
+
+        if (products1.isEmpty) {
+          return Center(child: Text("No products found."));
+        }
+        print("dfffffffffffffffffffffff");
+        return  _getSection1();
+
+        //   ListView.builder(
+        //   padding: EdgeInsets.zero,
+        //   itemCount: products.length,
+        //   shrinkWrap: true,
+        //   physics: NeverScrollableScrollPhysics(),
+        //   itemBuilder: (context, index) {
+        //     print("Rendering product at index $index");
+        //     return _getSection();
+        //   },
+        // );
+      },
+    );
+  }
+  _section2() {
+    print('PrintData____gfggggggggggggggggg_____');
+    return Selector<HomeProvider, bool>(
+      selector: (_, homeProvider) => homeProvider.secLoading,
+      builder: (context, isLoading, child) {
+        print('PrintDataaaaaaaaa____${products2.length}_____');
+
+        // if (isLoading) {
+        //   return Container(
+        //     width: double.infinity,
+        //     child: Shimmer.fromColors(
+        //       baseColor: Theme.of(context).colorScheme.simmerBase,
+        //       highlightColor: Theme.of(context).colorScheme.simmerHigh,
+        //       child: sectionLoading(),
+        //     ),
+        //   );
+        // }
+
+        if (products2.isEmpty) {
+          return Center(child: Text("No products found."));
+        }
+        print("dfffffffffffffffffffffff");
+        return  _getSection2();
+
+        //   ListView.builder(
+        //   padding: EdgeInsets.zero,
+        //   itemCount: products.length,
+        //   shrinkWrap: true,
+        //   physics: NeverScrollableScrollPhysics(),
+        //   itemBuilder: (context, index) {
+        //     print("Rendering product at index $index");
+        //     return _getSection();
+        //   },
+        // );
+      },
+    );
+  }
 
   // _section1() {
   //   return Selector<HomeProvider, bool>(
@@ -1635,7 +2471,143 @@ class _HomePageState extends State<HomePage>
   //     selector: (_, homeProvider) => homeProvider.secLoading,
   //   );
   // }
+  Widget mainOffer() {
+    return offerCategory.isEmpty
+        ? Container(
+        width: double.infinity,
+        child: Shimmer.fromColors(
+            baseColor: Theme.of(context).colorScheme.simmerBase,
+            highlightColor: Theme.of(context).colorScheme.simmerHigh,
+            child: catLoading()))
+        : Container(
 
+      height: 120,
+      padding: const EdgeInsets.only(top: 10, left: 10),
+      child: ListView.builder(
+        itemCount: offerCategory.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          final sub = offerCategory[index];
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(end: 10),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubCategoryWithBanner(
+                      title: offerCategory[index].name!,
+                      slug: offerCategory[index].slug!,
+                    ),
+                  ),);
+                // Open the product list via subcategory.url
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => WebViewScreen(url: sub.url, title: sub.name),
+                //   ),
+                // );
+              },
+              child:/* Column(
+                children: <Widget>[
+                  Container(
+                    width: 130,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.red,
+
+
+                    
+                    ),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        sub.image.toString(),
+                      
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+
+                  SizedBox(height: 5),
+           *//*       Container(
+                    width: 70,
+                    child: Text(
+                      sub.name ?? '',
+                      style: Theme.of(context)
+                          .textTheme
+                          .caption!
+                          .copyWith(
+                        color:
+                        Theme.of(context).colorScheme.fontColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                    ),
+                  ),*//*
+                ],
+              ),*/
+              Column(
+            children: <Widget>[
+            Stack(
+              children: [
+              Container(
+              width: 130,
+              height: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Colors.red,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25),
+                child: Image.network(
+                  sub.image.toString(),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              right: 8,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.transparent.withOpacity(0.3), // Transparent background
+                  borderRadius: BorderRadius.circular(20),
+                  // border: Border.all(color: Colors.white, width: 1),
+                ),
+                child: Text(
+                  sub.name ?? '',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            ],
+          ),
+          SizedBox(height: 5),
+          ],
+          ),
+
+          ),
+          );
+        },
+      ),
+    );
+  }
+  // i  want  to  givwe  the  image   name  of  thre image  ke  upar  with transparent  backgound   white text  with  rounded  border with  white color
   Widget _catList() {
     return subCategories.isEmpty
         ? Container(
@@ -1682,14 +2654,17 @@ class _HomePageState extends State<HomePage>
                             color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white,
-                              width: 2, // Optional: adjust border width
+                              color: colors.grey,
+                              width: 1, // Optional: adjust border width
                             ),
                           ),
-                          child: ClipOval(
-                            child: Image.network(
-                              sub.image,
-                              fit: BoxFit.contain,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: ClipOval(
+                              child: Image.network(
+                                sub.image,
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
                         ),
@@ -1726,7 +2701,7 @@ class _HomePageState extends State<HomePage>
                                 .copyWith(
                                   color:
                                       Theme.of(context).colorScheme.fontColor,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w500,
                                   fontSize: 11,
                                 ),
                             overflow: TextOverflow.ellipsis,
@@ -1742,6 +2717,442 @@ class _HomePageState extends State<HomePage>
             ),
           );
   }
+  Widget _catList1() {
+    return subCategories1.isEmpty
+        ? Container(
+            width: double.infinity,
+            child: Shimmer.fromColors(
+                baseColor: Theme.of(context).colorScheme.simmerBase,
+                highlightColor: Theme.of(context).colorScheme.simmerHigh,
+                child: catLoading()))
+        : Container(
+
+            height: 120,
+            padding: const EdgeInsets.only(top: 10, left: 10),
+            child: ListView.builder(
+              itemCount: subCategories1.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final sub = subCategories1[index];
+                return Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubCategoryWithBanner(
+                            title: subCategories1[index].name!,
+                            slug: subCategories1[index].slug!,
+                          ),
+                        ),);
+                      // Open the product list via subcategory.url
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => WebViewScreen(url: sub.url, title: sub.name),
+                      //   ),
+                      // );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colors.grey,
+                              width: 1, // Optional: adjust border width
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: ClipOval(
+                              child: Image.network(
+                                sub.image,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        /*    Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                          ),
+                          // color: Colors.white,
+                          child: ClipOval(
+
+                            child: Image.network(
+                              sub.image,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),*/
+                        // CircleAvatar(
+                        //   radius: 40,
+                        //   backgroundImage: NetworkImage(sub.image,),f
+                        // ),
+                        SizedBox(height: 5),
+                        Container(
+                          width: 70,
+                          child: Text(
+                            sub.name.toUpperCase() ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.fontColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+  }
+  Widget _catList2() {
+    return subCategories2.isEmpty
+        ? Container(
+            width: double.infinity,
+            child: Shimmer.fromColors(
+                baseColor: Theme.of(context).colorScheme.simmerBase,
+                highlightColor: Theme.of(context).colorScheme.simmerHigh,
+                child: catLoading()))
+        : Container(
+
+            height: 120,
+            padding: const EdgeInsets.only(top: 10, left: 10),
+            child: ListView.builder(
+              itemCount: subCategories2.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final sub = subCategories2[index];
+                return Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubCategoryWithBanner(
+                            title: subCategories2[index].name!,
+                            slug: subCategories2[index].slug!,
+                          ),
+                        ),);
+                      // Open the product list via subcategory.url
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => WebViewScreen(url: sub.url, title: sub.name),
+                      //   ),
+                      // );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colors.grey,
+                              width: 1, // Optional: adjust border width
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: ClipOval(
+                              child: Image.network(
+                                sub.image,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        /*    Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                          ),
+                          // color: Colors.white,
+                          child: ClipOval(
+
+                            child: Image.network(
+                              sub.image,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),*/
+                        // CircleAvatar(
+                        //   radius: 40,
+                        //   backgroundImage: NetworkImage(sub.image,),f
+                        // ),
+                        SizedBox(height: 5),
+                        Container(
+                          width: 70,
+                          child: Text(
+                            sub.name.toUpperCase() ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.fontColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+  }
+ /* Widget _catList3() {
+    return subCategories3.isEmpty
+        ? Container(
+            width: double.infinity,
+            child: Shimmer.fromColors(
+                baseColor: Theme.of(context).colorScheme.simmerBase,
+                highlightColor: Theme.of(context).colorScheme.simmerHigh,
+                child: catLoading()))
+        : Container(
+
+            height: 120,
+            padding: const EdgeInsets.only(top: 10, left: 10),
+            child: ListView.builder(
+              itemCount: subCategories3.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final sub = subCategories3[index];
+                return Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubCategoryWithBanner(
+                            title: subCategories3[index].name!,
+                            slug: subCategories3[index].slug!,
+                          ),
+                        ),);
+                      // Open the product list via subcategory.url
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => WebViewScreen(url: sub.url, title: sub.name),
+                      //   ),
+                      // );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colors.grey,
+                              width: 1, // Optional: adjust border width
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: ClipOval(
+                              child: Image.network(
+                                sub.image,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        *//*    Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                          ),
+                          // color: Colors.white,
+                          child: ClipOval(
+
+                            child: Image.network(
+                              sub.image,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),*//*
+                        // CircleAvatar(
+                        //   radius: 40,
+                        //   backgroundImage: NetworkImage(sub.image,),f
+                        // ),
+                        SizedBox(height: 5),
+                        Container(
+                          width: 70,
+                          child: Text(
+                            sub.name.toUpperCase() ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.fontColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+  }
+  Widget _catList4() {
+    return subCategories4.isEmpty
+        ? Container(
+            width: double.infinity,
+            child: Shimmer.fromColors(
+                baseColor: Theme.of(context).colorScheme.simmerBase,
+                highlightColor: Theme.of(context).colorScheme.simmerHigh,
+                child: catLoading()))
+        : Container(
+
+            height: 120,
+            padding: const EdgeInsets.only(top: 10, left: 10),
+            child: ListView.builder(
+              itemCount: subCategories4.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final sub = subCategories4[index];
+                return Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SubCategoryWithBanner(
+                            title: subCategories4[index].name!,
+                            slug: subCategories4[index].slug!,
+                          ),
+                        ),);
+                      // Open the product list via subcategory.url
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => WebViewScreen(url: sub.url, title: sub.name),
+                      //   ),
+                      // );
+                    },
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colors.grey,
+                              width: 1, // Optional: adjust border width
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: ClipOval(
+                              child: Image.network(
+                                sub.image,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        *//*    Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white,
+                            ),
+                          ),
+                          // color: Colors.white,
+                          child: ClipOval(
+
+                            child: Image.network(
+                              sub.image,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),*//*
+                        // CircleAvatar(
+                        //   radius: 40,
+                        //   backgroundImage: NetworkImage(sub.image,),f
+                        // ),
+                        SizedBox(height: 5),
+                        Container(
+                          width: 70,
+                          child: Text(
+                            sub.name.toUpperCase() ?? '',
+                            style: Theme.of(context)
+                                .textTheme
+                                .caption!
+                                .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.fontColor,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+  }*/
 
 /*  _catList() {
     return Selector<HomeProvider, bool>(
@@ -1906,6 +3317,132 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+  Widget lineWithText1(String text) {
+    return
+      categorys1.isEmpty ?
+      Container(
+          width: double.infinity,
+          child: Shimmer.fromColors(
+              baseColor: Theme.of(context).colorScheme.simmerBase,
+              highlightColor: Theme.of(context).colorScheme.simmerHigh,
+              child: catLoading1())):
+      Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: <Widget>[
+          // Left line
+          Expanded(
+            flex: 3, // 30%
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              height: 1,
+              color: Colors.grey,
+            ),
+          ),
+
+          // Center text
+          Text(
+            categorys1.first.categoryName,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+
+          // Right line
+          Expanded(
+            flex: 3, // 30%
+            child: Container(
+              margin: const EdgeInsets.only(left: 10),
+              height: 1,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget lineWithText2(String text) {
+    return
+      categorys2.isEmpty ?
+      Container(
+          width: double.infinity,
+          child: Shimmer.fromColors(
+              baseColor: Theme.of(context).colorScheme.simmerBase,
+              highlightColor: Theme.of(context).colorScheme.simmerHigh,
+              child: catLoading1())):
+      Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: <Widget>[
+          // Left line
+          Expanded(
+            flex: 3, // 30%
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              height: 1,
+              color: Colors.grey,
+            ),
+          ),
+
+          // Center text
+          Text(
+            categorys2.first.categoryName,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+
+          // Right line
+          Expanded(
+            flex: 3, // 30%
+            child: Container(
+              margin: const EdgeInsets.only(left: 10),
+              height: 1,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+/*  Widget lineWithText3(String text) {
+    return
+      categorys4.isEmpty ?
+      Container(
+          width: double.infinity,
+          child: Shimmer.fromColors(
+              baseColor: Theme.of(context).colorScheme.simmerBase,
+              highlightColor: Theme.of(context).colorScheme.simmerHigh,
+              child: catLoading1())):
+      Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: <Widget>[
+          // Left line
+          Expanded(
+            flex: 3, // 30%
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              height: 1,
+              color: Colors.grey,
+            ),
+          ),
+
+          // Center text
+          Text(
+            categorys4.first.categoryName,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+
+          // Right line
+          Expanded(
+            flex: 3, // 30%
+            child: Container(
+              margin: const EdgeInsets.only(left: 10),
+              height: 1,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }*/
 
   Widget lText(String text) {
     return Center(
@@ -1940,6 +3477,8 @@ class _HomePageState extends State<HomePage>
       getSetting();
       // getSlider();
       fetchSubCategories();
+      fetchSubCategories1();
+      offerCatg();
       getCat();
       getSeller();
       // getSection();
@@ -2105,6 +3644,7 @@ class _HomePageState extends State<HomePage>
 
           _getFav();
           fetchSubCategories();
+          fetchSubCategories1();
         }
 
         UserProvider user = Provider.of<UserProvider>(context, listen: false);
@@ -2144,10 +3684,11 @@ class _HomePageState extends State<HomePage>
   }
 
   List<SubCategory1> subCategories = [];
+  List<offerCategories> offerCategory = [];
   List<CategoryProduct> products = [];
   List<CategoryData> categorys = [];
 
-  Future<void> fetchSubCategories() async {
+  Future<void> fetchSubCategories() async  {
     print('PrintData____jhjhj_____');
     _isNetworkAvail = await isNetworkAvailable();
     if (_isNetworkAvail) {
@@ -2155,6 +3696,7 @@ class _HomePageState extends State<HomePage>
           .timeout(Duration(seconds: timeOut));
       var getdata = json.decode(response.body);
       print("sdddddddddddddddddddddd${getdata}");
+      // fetchAndStartPopup();
       if (!getdata['error']) {
         List list = getdata["data"]["sub_categories"];
         List list1 = getdata["data"]["products"];
@@ -2163,6 +3705,113 @@ class _HomePageState extends State<HomePage>
         products = list1.map((e) => CategoryProduct.fromJson(e)).toList();
         CategoryData categoryData = CategoryData.fromJson(categoryDataMap);
         categorys = [categoryData];
+        setState(() {});
+      }
+
+      print("Error fetching subcategories: $e");
+    }
+  }
+  List<SubCategory1> subCategories1 = [];
+  List<offerCategories> offerCategory1 = [];
+  List<CategoryProduct> products1 = [];
+  List<CategoryData> categorys1 = [];
+  Future<void> fetchSubCategories1() async {
+    print('Calling fetchSubCategories1 for category: ');
+    _isNetworkAvail = await isNetworkAvailable();
+
+    if (_isNetworkAvail) {
+      try {
+        Map<String, String> body = {
+          "category_id": "95",
+        };
+
+        final response = await http
+            .post(
+          Uri.parse(getCatApi1.toString()),
+          headers: headers,
+          body: body,
+        )
+            .timeout(Duration(seconds: timeOut));
+
+        final getdata = json.decode(response.body);
+        print("API Response: $getdata");
+
+        if (!getdata['error']) {
+          List list = getdata["data"]["sub_categories"];
+          List list1 = getdata["data"]["products"];
+          Map<String, dynamic> categoryDataMap = getdata["data"];
+
+          subCategories1 = list.map((e) => SubCategory1.fromJson(e)).toList();
+          products1 = list1.map((e) => CategoryProduct.fromJson(e)).toList();
+          CategoryData categoryData = CategoryData.fromJson(categoryDataMap);
+          categorys1 = [categoryData];
+
+          setState(() {});
+        }
+      } catch (e) {
+        print("Error fetching subcategories: $e");
+      }
+    }
+  }
+  List<SubCategory1> subCategories2 = [];
+  List<offerCategories> offerCategory2 = [];
+  List<CategoryProduct> products2 = [];
+  List<CategoryData> categorys2 = [];
+  Future<void> fetchSubCategories2() async {
+    print('Calling fetchSubCategories1 for category: ');
+    _isNetworkAvail = await isNetworkAvailable();
+
+    if (_isNetworkAvail) {
+      try {
+        Map<String, String> body = {
+          "category_id": "143",
+        };
+
+        final response = await http
+            .post(
+          Uri.parse(getCatApi1.toString()),
+          headers: headers,
+          body: body,
+        )
+            .timeout(Duration(seconds: timeOut));
+
+        final getdata = json.decode(response.body);
+        print("API Response: $getdata");
+
+        if (!getdata['error']) {
+          List list = getdata["data"]["sub_categories"];
+          List list1 = getdata["data"]["products"];
+          Map<String, dynamic> categoryDataMap = getdata["data"];
+
+          subCategories2 = list.map((e) => SubCategory1.fromJson(e)).toList();
+          products2 = list1.map((e) => CategoryProduct.fromJson(e)).toList();
+          CategoryData categoryData = CategoryData.fromJson(categoryDataMap);
+          categorys2 = [categoryData];
+
+          setState(() {});
+        }
+      } catch (e) {
+        print("Error fetching subcategories: $e");
+      }
+    }
+  }
+
+  Future<void> offerCatg() async {
+    print('PrintData____jhjhj_____');
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      Response response = await post(getCatOff, headers: headers)
+          .timeout(Duration(seconds: timeOut));
+      var getdata = json.decode(response.body);
+      print("AAAAAAAAAAAAAAAAAAAAAAAAAA${getdata}");
+      if (!getdata['error']) {
+        List list = getdata["data"]["categories"];
+
+        // Map<String, dynamic> categoryDataMap = getdata["data"];
+        offerCategory = list.map((e) => offerCategories.fromJson(e)).toList();
+        // products = list1.map((e) => CategoryProduct.fromJson(e)).toList();
+        // CategoryData categoryData = CategoryData.fromJson(categoryDataMap);
+        // categorys = [categoryData];
         setState(() {});
       }
 
@@ -2313,17 +3962,20 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget sliderLoading() {
-    double width = deviceWidth!;
+    double width = MediaQuery.of(context).size.width*90/100;
     double height = width / 2;
-    return Shimmer.fromColors(
-        baseColor: Theme.of(context).colorScheme.simmerBase,
-        highlightColor: Theme.of(context).colorScheme.simmerHigh,
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 10),
-          width: double.infinity,
-          height: height,
-          color: Theme.of(context).colorScheme.white,
-        ));
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Shimmer.fromColors(
+          baseColor: Theme.of(context).colorScheme.simmerBase,
+          highlightColor: Theme.of(context).colorScheme.simmerHigh,
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 10),
+            width: double.infinity,
+            height: height,
+            color: Theme.of(context).colorScheme.white,
+          )),
+    );
   }
 
   Widget _buildImagePageItem(Model slider) {
@@ -2972,6 +4624,7 @@ class _HomePageState extends State<HomePage>
   //       ),
   //     );
   // }
+
 /*  Widget listItem() {
     return categorys.isEmpty
         ? Container()
@@ -3132,7 +4785,7 @@ class _HomePageState extends State<HomePage>
               ),*/
               const SizedBox(height: 8),
               SizedBox(
-                height: 250,
+                height: 260,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: category.mostLikedProducts.length,
@@ -3150,31 +4803,79 @@ class _HomePageState extends State<HomePage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(12)
-                              ),
-                              child: FadeInImage(
-                                image: CachedNetworkImageProvider(product.image!),
-                                placeholder: placeHolder(100),
-                                imageErrorBuilder: (ctx, e, st) => erroWidget(100),
-                                height: 100,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    child: FadeInImage(
+                                      image: CachedNetworkImageProvider(product.image!),
+                                      placeholder: placeHolder(100),
+                                      imageErrorBuilder: (ctx, e, st) => erroWidget(100),
+                                      height: 115,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  // favImg(category ),
+                                ],
+                              ),
+
+                              /*ClipRRect(
+                              *//*  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(12)
+                                ),*//*
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                child: FadeInImage(
+                                  image: CachedNetworkImageProvider(product.image!),
+                                  placeholder: placeHolder(100),
+                                  imageErrorBuilder: (ctx, e, st) => erroWidget(100),
+                                  height: 115,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+
+                              ),*/
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(  left: 8.0,right: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     product.name!,
-                                    maxLines: 2,
+                                    maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                                   ),
                                   // const SizedBox(height: 4),
+                                  RatingBarIndicator(
+                                    rating: double.tryParse(product.averageRating.toString()) ?? 0.0,
+                                    itemCount: 5,
+                                    itemSize: 14,
+                                    unratedColor: Colors.grey[300],
+                                    itemBuilder: (ctx, _) => Icon(Icons.star, color: Colors.amber),
+                                  ),
+                                /*  Row(
+                                    children: [
+                                      Text(
+                                        "₹${product.price}",
+                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "₹${product.specialPrice}",
+                                        style: TextStyle(
+                                          decoration: TextDecoration.lineThrough,
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),*/
+
+
+                                  const SizedBox(height: 4),
                                   Row(
                                     children: [
                                       Text(
@@ -3191,26 +4892,24 @@ class _HomePageState extends State<HomePage>
                                       ),
                                     ],
                                   ),
-
-
-                                  const SizedBox(height: 4),
-                                  RatingBarIndicator(
+                                /*  RatingBarIndicator(
                                     rating: double.tryParse(product.averageRating.toString()) ?? 0.0,
                                     itemCount: 5,
                                     itemSize: 14,
                                     unratedColor: Colors.grey[300],
                                     itemBuilder: (ctx, _) => Icon(Icons.star, color: Colors.amber),
-                                  ),
-                                  SizedBox(height: 4),
+                                  ),*/
+                                  SizedBox(height: 10),
                                   SizedBox(
                                     width: double.infinity,
+                                    height: MediaQuery.of(context).size.height*4/100,
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: ColorResources.buttonColor,
                                         visualDensity: VisualDensity.compact,
                                         padding: EdgeInsets.symmetric(vertical: 6),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                       ),
                                      /*   onPressed: () async {
@@ -3282,7 +4981,7 @@ class _HomePageState extends State<HomePage>
                                         ))));
                                         // // Navigate to product details
                                       },*/
-                                      child: Text("View"),
+                                      child: Text("View Details",style: TextStyle(fontWeight: FontWeight.w600),),
                                     ),
                                   ),
                                 ],
@@ -3301,7 +5000,573 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+  Widget listItem1() {
+    return categorys1.isEmpty
+        ? Container()
+        : Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: categorys1.length,
+        itemBuilder: (context, index) {
+          final category = categorys1[index];
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+           /*   Text(
+                category.mostLikedProducts.first.name ?? "Category",
+                style: Theme.of(context).textTheme.headline6,
+              ),*/
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 260,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: category.mostLikedProducts.length,
+                  itemBuilder: (context, pIndex) {
+                    final product = category.mostLikedProducts[pIndex];
+                    print('PrintData____${category.mostLikedProducts.first.image}_____');
+                    return Container(
+                      width: 160, // control card width
+                      // margin: EdgeInsets.only(right: 12),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    child: FadeInImage(
+                                      image: CachedNetworkImageProvider(product.image!),
+                                      placeholder: placeHolder(100),
+                                      imageErrorBuilder: (ctx, e, st) => erroWidget(100),
+                                      height: 115,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  // favImg(category ),
+                                ],
+                              ),
 
+                              /*ClipRRect(
+                              *//*  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(12)
+                                ),*//*
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                child: FadeInImage(
+                                  image: CachedNetworkImageProvider(product.image!),
+                                  placeholder: placeHolder(100),
+                                  imageErrorBuilder: (ctx, e, st) => erroWidget(100),
+                                  height: 115,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+
+                              ),*/
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(  left: 8.0,right: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.name!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                  ),
+                                  // const SizedBox(height: 4),
+                                  RatingBarIndicator(
+                                    rating: double.tryParse(product.averageRating.toString()) ?? 0.0,
+                                    itemCount: 5,
+                                    itemSize: 14,
+                                    unratedColor: Colors.grey[300],
+                                    itemBuilder: (ctx, _) => Icon(Icons.star, color: Colors.amber),
+                                  ),
+                                /*  Row(
+                                    children: [
+                                      Text(
+                                        "₹${product.price}",
+                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "₹${product.specialPrice}",
+                                        style: TextStyle(
+                                          decoration: TextDecoration.lineThrough,
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),*/
+
+
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "₹${product.price}",
+                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "₹${product.specialPrice}",
+                                        style: TextStyle(
+                                          decoration: TextDecoration.lineThrough,
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                /*  RatingBarIndicator(
+                                    rating: double.tryParse(product.averageRating.toString()) ?? 0.0,
+                                    itemCount: 5,
+                                    itemSize: 14,
+                                    unratedColor: Colors.grey[300],
+                                    itemBuilder: (ctx, _) => Icon(Icons.star, color: Colors.amber),
+                                  ),*/
+                                  SizedBox(height: 10),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: MediaQuery.of(context).size.height*4/100,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: ColorResources.buttonColor,
+                                        visualDensity: VisualDensity.compact,
+                                        padding: EdgeInsets.symmetric(vertical: 6),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                     /*   onPressed: () async {
+                                          final slug = product.slug ?? ''; // make sure 'slug' exists in your model
+                                          if (slug.isEmpty) return;
+
+                                          final response = await http.post(
+                                            Uri.parse('https://plumbingbazzar.com/app/v1/api/get_single_product_details_slug'),
+                                            body: {'slug': slug},
+                                          );
+                                          print('DETAILS DATA KGKJGJKKJGKJGKJHGJHGKJHGHJGJHGJH${response.body}_____');
+                                          if (response.statusCode == 200) {
+                                            final data = json.decode(response.body);
+                                            // if (data['status'] == true) {
+                                              final productData = data['data'];
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => ProductDetail1(model: productData),
+                                                ),
+                                              );
+                                            // }
+                                          } else {
+                                            // handle error
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Failed to load product details')),
+                                            );
+                                          }
+                                        },*/
+                                        onPressed: () async {
+                                          final slug = product.slug ?? '';
+                                          if (slug.isEmpty) return;
+
+                                          final response = await http.post(
+                                            Uri.parse('https://plumbingbazzar.com/app/v1/api/get_single_product_details_slug'),
+                                            body: {'slug': slug},
+                                          );
+
+                                          print("AAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHH${response.body}");
+
+                                          if (response.statusCode == 200) {
+                                            final data = json.decode(response.body);
+                                            final productData = data['data'];
+
+                                            // FIX: extract the actual product map
+                                            final productModel = Product.fromJson(productData['product']);
+
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => ProductDetail1(model: productModel , list: true,),
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Failed to load product details')),
+                                            );
+                                          }
+                                        }
+,
+                                        /*   onPressed: () {
+
+                                        // MostLikedProduct model = category.mostLikedProducts[pIndex];
+                                        Navigator.push(
+                                            context, (MaterialPageRoute(builder: (context) => ProductDetail1(
+
+
+
+                                        ))));
+                                        // // Navigate to product details
+                                      },*/
+                                      child: Text("View Details",style: TextStyle(fontWeight: FontWeight.w600),),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+  Widget listItem2() {
+    return categorys2.isEmpty
+        ? Container()
+        : Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8),
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: categorys2.length,
+        itemBuilder: (context, index) {
+          final category = categorys2[index];
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+           /*   Text(
+                category.mostLikedProducts.first.name ?? "Category",
+                style: Theme.of(context).textTheme.headline6,
+              ),*/
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 260,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: category.mostLikedProducts.length,
+                  itemBuilder: (context, pIndex) {
+                    final product = category.mostLikedProducts[pIndex];
+                    print('PrintData____${category.mostLikedProducts.first.image}_____');
+                    return Container(
+                      width: 160, // control card width
+                      // margin: EdgeInsets.only(right: 12),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                                    child: FadeInImage(
+                                      image: CachedNetworkImageProvider(product.image!),
+                                      placeholder: placeHolder(100),
+                                      imageErrorBuilder: (ctx, e, st) => erroWidget(100),
+                                      height: 115,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  // favImg(category ),
+                                ],
+                              ),
+
+
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(  left: 8.0,right: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.name!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                  ),
+                                  // const SizedBox(height: 4),
+                                  RatingBarIndicator(
+                                    rating: double.tryParse(product.averageRating.toString()) ?? 0.0,
+                                    itemCount: 5,
+                                    itemSize: 14,
+                                    unratedColor: Colors.grey[300],
+                                    itemBuilder: (ctx, _) => Icon(Icons.star, color: Colors.amber),
+                                  ),
+
+
+
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "₹${product.price}",
+                                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        "₹${product.specialPrice}",
+                                        style: TextStyle(
+                                          decoration: TextDecoration.lineThrough,
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height: 10),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: MediaQuery.of(context).size.height*4/100,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: ColorResources.buttonColor,
+                                        visualDensity: VisualDensity.compact,
+                                        padding: EdgeInsets.symmetric(vertical: 6),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                      ),
+
+                                        onPressed: () async {
+                                          final slug = product.slug ?? '';
+                                          if (slug.isEmpty) return;
+
+                                          final response = await http.post(
+                                            Uri.parse('https://plumbingbazzar.com/app/v1/api/get_single_product_details_slug'),
+                                            body: {'slug': slug},
+                                          );
+
+                                          print("AAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHH${response.body}");
+
+                                          if (response.statusCode == 200) {
+                                            final data = json.decode(response.body);
+                                            final productData = data['data'];
+
+                                            // FIX: extract the actual product map
+                                            final productModel = Product.fromJson(productData['product']);
+
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => ProductDetail1(model: productModel , list: true,),
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Failed to load product details')),
+                                            );
+                                          }
+                                        }
+,
+                                        /*   onPressed: () {
+
+                                        // MostLikedProduct model = category.mostLikedProducts[pIndex];
+                                        Navigator.push(
+                                            context, (MaterialPageRoute(builder: (context) => ProductDetail1(
+
+
+
+                                        ))));
+                                        // // Navigate to product details
+                                      },*/
+                                      child: Text("View Details",style: TextStyle(fontWeight: FontWeight.w600),),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+  Widget favImg(Product product) {
+    return Positioned.directional(
+      textDirection: Directionality.of(context),
+      end: 0,
+      bottom: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: Card(
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: product!.isFavLoading!
+                  ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 0.7,
+                    )),
+              )
+                  : Selector<FavoriteProvider, List<String?>>(
+                builder: (context, data, child) {
+                  // print("object*****${data[0].id}***${widget.model!.id}");
+
+                  return InkWell(
+                      child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            !data.contains(product!.id)
+                                ? (Icons.favorite_border)
+                                : Icons.favorite ,color: (!data.contains(product!.id)) ? colors.primary : Colors.red,
+                            size: 20,
+                          )),
+                      onTap: () async {
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        String? curUserId = prefs.getString('CUR_USERID');
+                        if (curUserId != null) {
+                          !data.contains(product.id)
+                              ? _setFav(-1 , product)
+                              : _removeFav(-1 , product);
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Login()),
+                          );
+                        }
+                      });
+                },
+                selector: (_, provider) => provider.favIdList,
+              )),
+        ),
+      ),
+    );
+  }
+
+  _setFav(int index , Product product) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? curUserId = prefs.getString('CUR_USERID');
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      try {
+        if (mounted)
+          setState(() {
+            index == -1
+                ? product!.isFavLoading = true
+                : product.isFavLoading = true;
+          });
+
+        var parameter = {USER_ID: curUserId, PRODUCT_ID:product!.id};
+        Response response =
+        await post(setFavoriteApi, body: parameter, headers: headers)
+            .timeout(Duration(seconds: timeOut));
+
+        var getdata = json.decode(response.body);
+
+        bool error = getdata["error"];
+        String? msg = getdata["message"];
+        if (!error) {
+          index == -1
+              ? product!.isFav = "1"
+              : product.isFav = "1";
+
+          context.read<FavoriteProvider>().addFavItem(product);
+        } else {
+          setSnackbar(msg!, context);
+        }
+
+        if (mounted)
+          setState(() {
+            index == -1
+                ? product.isFavLoading = false
+                : product.isFavLoading = false;
+          });
+      } on TimeoutException catch (_) {
+        setSnackbar(getTranslated(context, 'somethingMSg')!, context);
+      }
+    } else {
+      if (mounted)
+        setState(() {
+          _isNetworkAvail = false;
+        });
+    }
+  }
+
+  _removeFav(int index , Product product) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? curUserId = prefs.getString('CUR_USERID');
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      try {
+        if (mounted)
+          setState(() {
+            index == -1
+                ? product!.isFavLoading = true
+                : product.isFavLoading = true;
+          });
+
+        var parameter = {USER_ID: curUserId, PRODUCT_ID: product!.id};
+        Response response =
+        await post(removeFavApi, body: parameter, headers: headers)
+            .timeout(Duration(seconds: timeOut));
+
+        var getdata = json.decode(response.body);
+        bool error = getdata["error"];
+        String? msg = getdata["message"];
+        if (!error) {
+          ;
+          index == -1
+              ? product!.isFav = "0"
+              : product.isFav = "0";
+          context
+              .read<FavoriteProvider>()
+              .removeFavItem(product!.prVarientList![0].id!);
+        } else {
+          setSnackbar(msg!, context);
+        }
+
+        if (mounted)
+          setState(() {
+            index == -1
+                ? product!.isFavLoading = false
+                : product.isFavLoading = false;
+          });
+      } on TimeoutException catch (_) {
+        setSnackbar(getTranslated(context, 'somethingMSg')!, context);
+      }
+    } else {
+      if (mounted)
+        setState(() {
+          _isNetworkAvail = false;
+        });
+    }
+  }
   Widget noInternet(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
@@ -3843,6 +6108,14 @@ class _NetworkVideoWidgetState extends State<NetworkVideoWidget> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width * 95 / 100;
     final height = screenWidth * 0.65;
+  /*  final PopupController popupController = Get.put(PopupController());
+
+    // Set context if not already
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      popupController.setContext(context);
+      popupController.fetchAndStartPopup();
+    });*/
+
 
     return _controller.value.isInitialized
         ? ClipRRect(

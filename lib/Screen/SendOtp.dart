@@ -21,6 +21,7 @@ import '../Helper/Color.dart';
 import '../Helper/Constant.dart';
 import '../Helper/Session.dart';
 import '../Provider/UserProvider.dart';
+import 'Login.dart';
 
 class SendOtp extends StatefulWidget {
   String? title;
@@ -221,6 +222,7 @@ class _SendOtpState extends State<SendOtp> with TickerProviderStateMixin {
   }
 
   Future<void> getVerifyUser() async {
+    print("U Are Registering  calling  your Api");
     // try {
       var data = {MOBILE: mobile, "forgot_otp": "false"};
       print("Anjali Verify data___sfgdfg_${data}");
@@ -229,6 +231,7 @@ class _SendOtpState extends State<SendOtp> with TickerProviderStateMixin {
               .timeout(Duration(seconds: timeOut));
 
       print(getVerifyUserApi);
+      print("User Apiiiiiiiiiiiiiiiiiiiiiii $getVerifyUserApi");
 print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn${response.body}");
 print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
       print("vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
@@ -545,17 +548,52 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
 
   Widget verifyBtn() {
     return AppBtn(
-        title: widget.title == getTranslated(context, 'SEND_OTP_TITLE')
-            ? getTranslated(context, 'SEND_OTP')
-            : getTranslated(context, 'GET_PASSWORD'),
+      title: "Get OTP",
+        // title: widget.title == getTranslated(context, 'SEND_OTP_TITLE')
+        //     ? getTranslated(context, 'SEND_OTP')
+        //     : getTranslated(context, 'GET_PASSWORD'),
         btnAnim: buttonSqueezeanimation,
         btnCntrl: buttonController,
         onBtnSelected: () async {
           validateAndSubmit();
         });
   }
-
-  Widget termAndPolicyTxt() {
+  termAndPolicyTxt() {
+    return Padding(
+      padding:
+      const EdgeInsetsDirectional.only(bottom: 20.0, end: 25.0, top: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text("Already have an account ? ",
+              style: Theme.of(context).textTheme.caption!.copyWith(
+                  color: Theme.of(context).colorScheme.fontColor,
+                  fontWeight: FontWeight.normal,
+                  fontSize: 16)),
+          InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => Login(
+                    // checkForgot: "false",
+                    title: "Login",
+                  ),
+                ));
+              },
+              child: Text(
+                // getTranslated(context, 'SIGN_UP_LBL')!,
+                "Login ",style: TextStyle(color:ColorResources.buttonColor, fontWeight: FontWeight.w500 ,fontFamily: "opensans"),
+               /* style: Theme.of(context).textTheme.caption!.copyWith(
+                  color: Theme.of(context).colorScheme.fontColor,
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),*/
+              ))
+        ],
+      ),
+    );
+  }
+ /* Widget termAndPolicyTxt() {
     return widget.title == getTranslated(context, 'SEND_OTP_TITLE')
         ? Padding(
             padding: const EdgeInsets.only(
@@ -618,7 +656,7 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
             ),
           )
         : Container();
-  }
+  }*/
 
   backBtn() {
     return Platform.isIOS
@@ -840,36 +878,38 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
   //   );
   // }
   Widget getLoginContainer() {
-    final mediaQuery = MediaQuery.of(context);
+    // final mediaQuery = MediaQuery.of(context);
 
     return Positioned.directional(
-      top: 460,
+      top: 450,
       // start: mediaQuery.size.width * 0.5,
       textDirection: Directionality.of(context),
       // top: mediaQuery.size.height * 0.2,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: 10,),
           Container(
-            alignment: Alignment.center,
+            alignment: Alignment.topLeft,
             padding: EdgeInsets.only(
               // bottom: mediaQuery.viewInsets.bottom * 0.8,
               // left: 16,
               // right: 16,
-              top: 24,
+              // top: 24,
             ),
-            height: mediaQuery.size.height * 0.4,
-            width: mediaQuery.size.width,
+            height: MediaQuery.of(context).size.height*40/100,
+            // width: mediaQuery.size.width,
             decoration: BoxDecoration(
               color: ColorResources.secondary, // 🔵 Blue background
               borderRadius: BorderRadius.circular(30), // 🎯 Rounded corners
-              boxShadow: [
+            /*  boxShadow: [
                 BoxShadow(
                   color: Colors.black26, // darker shadow for depth
                   offset: Offset(0, 8),
                   blurRadius: 25,
                   spreadRadius: 2,
                 ),
-              ],
+              ],*/
             ),
             child: Form(
               key: _formkey,
@@ -877,11 +917,12 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
                 behavior: MyBehavior(),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: mediaQuery.size.height * 2,
+                    // maxHeight: mediaQuery.size.height * 2,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      SizedBox(height: 20,),
                       Container(
                         child: Text(
                           "Hello! Register to get",
@@ -902,16 +943,18 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
                                   fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      SizedBox(height: mediaQuery.size.height * 0.03),
+                      SizedBox(height: 20,),
+                      // SizedBox(height: mediaQuery.size.height * 0.03),
                       // setSignInLabel(),
                       setCodeWithMono(),
                       verifyBtn(),
+                      termAndPolicyTxt()
 
                       // loginBtn(),
 
                       // SizedBox(height: 16),
 
-                      termAndPolicyTxt(),
+                      // termAndPolicyTxt(),
                       // SizedBox(height: mediaQuery.size.height * 0.05),
                     ],
                   ),

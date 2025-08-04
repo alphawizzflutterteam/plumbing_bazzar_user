@@ -216,8 +216,8 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
       request.fields["email"] = email!;
       request.fields["address"] = address!;
       request.fields["gst_no"] = gst!;
-      request.fields["latitude"] = latitude;     // ✅ Correct field
-      request.fields["longitude"] = longitude;   // ✅ Correct field
+      request.fields["latitude"] = latitude;
+      request.fields["longitude"] = longitude;
       request.fields[FRNDCODE] = referController.text.toString();
 
       var response = await request.send();

@@ -78,6 +78,7 @@ class StateRate extends State<ReviewList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         key: _scaffoldKey,
         appBar:
             getAppBar(getTranslated(context, 'CUSTOMER_REVIEW_LBL')!, context),
@@ -315,7 +316,7 @@ color: colors.white70,
                                         itemBuilder: (context, index) =>
                                             const Icon(
                                           Icons.star,
-                                          color: colors.yellow,
+                                          color: Colors.orange,
                                         ),
                                         itemCount: 5,
                                         itemSize: 12.0,
@@ -631,7 +632,7 @@ color: colors.white70,
         rating: ratingStar,
         itemBuilder: (context, index) => const Icon(
           Icons.star_rate_rounded,
-          color: colors.yellow,
+          color: Colors.orange,
         ),
         itemCount: totalStars,
         itemSize: 20.0,
@@ -654,7 +655,7 @@ color: colors.white70,
                 borderRadius: BorderRadius.circular(3.0),
                 border: Border.all(
                   width: 0.5,
-                  color: colors.grad2Color,
+                  color: colors.primary,
                 )),
           ),
           Container(

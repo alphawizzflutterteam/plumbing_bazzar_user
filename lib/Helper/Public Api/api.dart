@@ -55,8 +55,10 @@ Future<UpdateUserModels?> updateUserDetails(userName, mobileNumber, email, dob,
     {required context}) async {
   var header = headers;
   var request = http.MultipartRequest('POST', updateUserApi);
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? curUserId = prefs.getString('CUR_USERID');
   request.fields.addAll({
-    'user_id': '$CUR_USERID',
+    'user_id': '$curUserId',
     'username': '$userName',
     'mobile': '$mobileNumber',
     'email': '$email',

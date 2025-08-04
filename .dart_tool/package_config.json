@@ -512,6 +512,12 @@
       "languageVersion": "2.15"
     },
     {
+      "name": "get",
+      "rootUri": "file:///C:/Users/indian%205/AppData/Local/Pub/Cache/hosted/pub.dev/get-4.7.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "glob",
       "rootUri": "file:///C:/Users/indian%205/AppData/Local/Pub/Cache/hosted/pub.dev/glob-2.1.2",
       "packageUri": "lib/",
@@ -1346,7 +1352,7 @@
       "languageVersion": "3.2"
     }
   ],
-  "generated": "2025-07-30T13:16:01.611942Z",
+  "generated": "2025-08-04T12:16:41.142284Z",
   "generator": "pub",
   "generatorVersion": "3.3.4"
 }

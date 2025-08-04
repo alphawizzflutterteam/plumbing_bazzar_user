@@ -41,7 +41,7 @@ class _SignInUpAccState extends State<SignInUpAcc> {
 
   _subLogo() {
     return Padding(
-      padding: EdgeInsetsDirectional.only(top: 50.0),
+      padding: EdgeInsetsDirectional.only(top: 20.0),
       child: Image.asset(
         'assets/images/titleicon.png',
       fit: BoxFit.contain,
@@ -88,7 +88,7 @@ class _SignInUpAccState extends State<SignInUpAcc> {
 
   signInyourAccTxt() {
     return Padding(
-      padding: EdgeInsetsDirectional.only(top: 5.0, bottom: 10),
+      padding: EdgeInsetsDirectional.only(top: 1.0, bottom: 10),
       child: Column(
         children: [
           new Text("From Leaks to Fixes",
@@ -102,7 +102,7 @@ class _SignInUpAccState extends State<SignInUpAcc> {
             // getTranslated(context, 'SIGNIN_ACC_LBL')!,
             style: Theme.of(context).textTheme.subtitle1!.copyWith(
                fontSize: 15,
-              fontWeight: FontWeight.w100
+              fontWeight: FontWeight.w400
                 ),
           ),
         ],
@@ -113,7 +113,7 @@ class _SignInUpAccState extends State<SignInUpAcc> {
   signInBtn() {
     return CupertinoButton(
       child: Container(
-          width: deviceWidth! * 0.8,
+          width: deviceWidth! * 0.9,
           height: 50,
           alignment: FractionalOffset.center,
           decoration: new BoxDecoration(
@@ -147,14 +147,17 @@ ContinueASGuest(){
             ),
           );
         },
-        child: Center(
-          child: Text(
-            "Continue as a guest",
-            style: TextStyle(
-              color: ColorResources.buttonColor,
-              fontSize: 16,
-              decoration: TextDecoration.underline,
-              fontWeight: FontWeight.w500,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 18.0),
+          child: Center(
+            child: Text(
+              "Continue as a guest",
+              style: TextStyle(
+                color: ColorResources.buttonColor,
+                fontSize: 16,
+                decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
@@ -164,23 +167,24 @@ ContinueASGuest(){
   createAccBtn() {
     return CupertinoButton(
       child: Container(
-          width: deviceWidth! * 0.8,
+          width: deviceWidth! * 0.9,
           height: 50,
           alignment: FractionalOffset.center,
           decoration: new BoxDecoration(
-            color: ColorResources.buttonColor,
+            color: Colors.white,
+            border: Border.all(width: 1.0, color:Colors.grey),
             // gradient: LinearGradient(
             //     begin: Alignment.topLeft,
             //     end: Alignment.bottomRight,
             //     colors: [colors.grad1Color, colors.grad2Color],
             //     stops: [0, 1]),
-            borderRadius: new BorderRadius.all(const Radius.circular(30.0)),
+            borderRadius: new BorderRadius.all(const Radius.circular(30.0)  ,),
 
           ),
           child: Text(getTranslated(context, 'CREATE_ACC_LBL')!,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                  color: colors.whiteTemp, fontWeight: FontWeight.normal))),
+                  color: colors.grey, fontWeight: FontWeight.w500 , fontFamily: "opensans"))),
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (BuildContext context) => SendOtp(
@@ -231,15 +235,15 @@ ContinueASGuest(){
                 child: _subLogo()),
             // Background image
             Positioned(
-              top: 130,
+              top: 80,
               left: 0,
               right: 0,
               child: welcomeEshopTxt(),
             ),
         
-            // Bottom container overlapping the image
+
             Positioned(
-              top: deviceHeight * 0.55, // Overlap position
+              top: deviceHeight * 0.52, // Overlap position
               left: 0,
               right: 0,
               child: Container(
@@ -251,14 +255,14 @@ ContinueASGuest(){
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40),
                   ),
-                  boxShadow: [
+             /*     boxShadow: [
                     BoxShadow(
                       color: Colors.black26, // darker shadow for depth
                       offset: Offset(0, 8),
                       blurRadius: 25,
                       spreadRadius: 2,
                     ),
-                  ],
+                  ],*/
                 ),
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Column(
@@ -266,10 +270,9 @@ ContinueASGuest(){
                   children: [
                     signInyourAccTxt(),
                     signInBtn(),
-        
                     createAccBtn(),
                     ContinueASGuest()
-        
+
                   ],
                 ),
               ),

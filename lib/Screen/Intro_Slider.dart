@@ -21,12 +21,12 @@ class _GettingStartedScreenState extends State<IntroSlider>
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+  /*  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
-    ));
+    ));*/
     super.initState();
 
     new Future.delayed(Duration.zero, () {

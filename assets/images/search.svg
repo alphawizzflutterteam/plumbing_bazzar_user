@@ -1,3 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13">
-  <path id="search" d="M22.089,22.923a.714.714,0,0,1-1.026,0l-1.828-1.837a6.1,6.1,0,0,1-8.366-.678,6.169,6.169,0,0,1,.18-8.432,6.1,6.1,0,0,1,8.387-.316,6.169,6.169,0,0,1,.809,8.395l1.828,1.837A.737.737,0,0,1,22.089,22.923ZM15.515,11.755a4.528,4.528,0,1,0,3.2,1.33,4.534,4.534,0,0,0-3.2-1.33Z" transform="translate(-9.292 -10.141)" fill="#fc6a57"/>
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="40" height="40" rx="20" fill="#F5F6F8"/>
+<path d="M25.5 25.5L30 30" stroke="#767680" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M28 19C28 14.0294 23.9706 10 19 10C14.0294 10 10 14.0294 10 19C10 23.9706 14.0294 28 19 28C23.9706 28 28 23.9706 28 19Z" stroke="#767680" stroke-width="1.8" stroke-linejoin="round"/>
 </svg>

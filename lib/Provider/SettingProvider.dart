@@ -94,6 +94,10 @@ class SettingProvider {
     userProvider.setProfilePic("");
     userProvider.setMobile("");
     userProvider.setEmail("");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? curUserId = prefs.getString('CUR_USERID');
+    await prefs.clear();
+    // await curUserId.toString()?.clear();
     await _sharedPreferences.clear();
   }
 

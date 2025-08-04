@@ -54,14 +54,21 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
 void main() async {
    WidgetsFlutterBinding.ensureInitialized();
   // await _requestLocationPermission();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: ColorResources.secondary,
+/*  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.white,
     statusBarIconBrightness: Brightness.light, // for Android
     statusBarBrightness: Brightness.light, // for iOS
+  ));*/
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
   ));
+
   // await Firebase.initializeApp(
   //     name: "MyTop10Store",
   //     options: const FirebaseOptions(
@@ -174,6 +181,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
     if (this._locale == null) {
       return Container(
         child: Center(
@@ -202,8 +210,10 @@ class _MyAppState extends State<MyApp> {
             ChangeNotifierProvider<CartProvider>(
                 create: (context) => CartProvider()),
           ],
+
           child: MaterialApp(
             //scaffoldMessengerKey: rootScaffoldMessengerKey,
+            navigatorObservers: [routeObserver],
             locale: _locale,
             supportedLocales: [
               Locale("en", "US"),
@@ -243,7 +253,7 @@ class _MyAppState extends State<MyApp> {
                   Theme.of(context).iconTheme.copyWith(color: colors.primary),
               primarySwatch: colors.primary_app,
               primaryColor: Theme.of(context).colorScheme.lightWhite,
-              fontFamily: 'opensans',
+              fontFamily: 'poppins',
               brightness: Brightness.light,
               textTheme: TextTheme(
                       headline6: TextStyle(
@@ -274,7 +284,7 @@ class _MyAppState extends State<MyApp> {
                   selectionColor: colors.darkIcon,
                   selectionHandleColor: colors.darkIcon),
               toggleableActiveColor: colors.primary,
-              fontFamily: 'opensans',
+              fontFamily: 'poppins',
               brightness: Brightness.dark,
               hintColor: colors.darkIcon,
               iconTheme:

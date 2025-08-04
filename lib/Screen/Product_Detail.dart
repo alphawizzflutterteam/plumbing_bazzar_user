@@ -2067,8 +2067,8 @@ class StateItem extends State<ProductDetail> with TickerProviderStateMixin {
                           itemBuilder: (context, index) {
                             return (index == productList.length &&
                                     !notificationisloadmore)
-                                ? simmerSingle()
-                                : productItem(index);
+                                ? simmerSingle() : SizedBox();
+                                // : productItem(index);
                           },
                         )
 
@@ -2558,7 +2558,7 @@ class StateItem extends State<ProductDetail> with TickerProviderStateMixin {
                     rating: double.parse(reviewList[index].rating!),
                     itemBuilder: (context, index) => Icon(
                       Icons.star,
-                      color: colors.primary,
+                      color: Colors.orangeAccent,
                     ),
                     itemCount: 5,
                     itemSize: 12.0,
@@ -3278,7 +3278,7 @@ class StateItem extends State<ProductDetail> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(3.0),
                 border: Border.all(
                   width: 0.5,
-                  color: colors.grad2Color,
+                  color: colors.primary,
                 )),
           ),
           Container(
@@ -3304,7 +3304,7 @@ class StateItem extends State<ProductDetail> with TickerProviderStateMixin {
         rating: ratingStar,
         itemBuilder: (context, index) => const Icon(
           Icons.star_rate_rounded,
-          color: colors.yellow,
+          color: Colors.orange,
         ),
         itemCount: totalStars,
         itemSize: 20.0,
@@ -5385,7 +5385,7 @@ class StateItem1 extends State<ProductDetail1> with TickerProviderStateMixin {
                         )
                             : Container(),
                         // reviewList.length > 0 ? Divider() : Container(),
-                        productList.length > 0
+                /*        productList.length > 0
                             ? Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
@@ -5421,12 +5421,12 @@ class StateItem1 extends State<ProductDetail1> with TickerProviderStateMixin {
                                   },
                                 )
 
-                              /*    List.generate(
+                              *//*    List.generate(
                         productList.length,
                         (index) {
                           Product? item;
-                        */
-                              /*  try {
+                        *//*
+                              *//*  try {
                             item =
                                 productList.isEmpty ? null : productList[index];
                             if (notificationisloadmore &&
@@ -5434,15 +5434,15 @@ class StateItem1 extends State<ProductDetail1> with TickerProviderStateMixin {
                                 notificationcontroller!.position.pixels <= 0) {
                               getProduct();
                             }
-                          } on Exception catch (_) {}*/
-                              /*
+                          } on Exception catch (_) {}*//*
+                              *//*
 
                           return item == null
                               ? Container()
                               : productItem(index);
                         },
-                      )*/
-                            )),
+                      )*//*
+                            )),*/
                       ],
                     )
                   ]),
@@ -5907,7 +5907,7 @@ class StateItem1 extends State<ProductDetail1> with TickerProviderStateMixin {
                 rating: double.parse(reviewList[index].rating!),
                 itemBuilder: (context, index) => Icon(
                   Icons.star,
-                  color: colors.primary,
+                  color: Colors.orange,
                 ),
                 itemCount: 5,
                 itemSize: 12.0,
@@ -6626,7 +6626,7 @@ class StateItem1 extends State<ProductDetail1> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(3.0),
                 border: Border.all(
                   width: 0.5,
-                  color: colors.grad2Color,
+                  color: colors.primary,
                 )),
           ),
           Container(
@@ -6652,7 +6652,7 @@ class StateItem1 extends State<ProductDetail1> with TickerProviderStateMixin {
         rating: ratingStar,
         itemBuilder: (context, index) => const Icon(
           Icons.star_rate_rounded,
-          color: colors.yellow,
+          color: Colors.orange,
         ),
         itemCount: totalStars,
         itemSize: 20.0,

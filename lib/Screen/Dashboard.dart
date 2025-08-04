@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:Plumbingbazzar/Screen/pop_up_controller.dart';
+import 'package:get/get.dart' as getx;
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:Plumbingbazzar/Helper/Color.dart';
@@ -44,56 +47,55 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-    //     overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    //   statusBarColor: ColorResources.secondary,
-    //   statusBarIconBrightness: Brightness.light,
-    // ));
     super.initState();
-    print('PrintData_________________________');
+
+    final popupController = Get.put(PopupController());
+
+    _tabController = TabController(length: 5, vsync: this);
+
+    // Show popup on Home tab after UI build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      popupController.setContext(context);
+      if (_tabController.index == 0) {
+        popupController.fetchAndStartPopup();
+      }
+    });
+
+    _tabController.addListener(() async {
+      if (!_tabController.indexIsChanging) {
+        final index = _tabController.index;
+
+        // 👇 Show popup only on Home tab
+        if (index == 0) {
+          popupController.setContext(context);
+          popupController.fetchAndStartPopup();
+        } else {
+          popupController.stopPopup();
+        }
+
+        // 👇 Check login on tab 3
+        if (index == 3) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String? curUserId = prefs.getString('CUR_USERID');
+          if (curUserId == null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Login()),
+            );
+            _tabController.animateTo(0);
+          }
+        }
+
+        setState(() {
+          _selBottom = index;
+        });
+      }
+    });
+
     userDetails();
     initDynamicLinks();
-    _tabController = TabController(
-      length: 5,
-      vsync: this,
-    );
-
-/*    final pushNotificationService = PushNotificationService(
-        context: context, tabController: _tabController);
-    pushNotificationService.initialise();*/
-
-    _tabController.addListener(
-      () {
-        Future.delayed(Duration(seconds: 0)).then(
-          (value) async {
-            if (_tabController.index == 3) {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              String? curUserId = prefs.getString('CUR_USERID');
-
-              if (curUserId == null) {
-
-                print('PrintDaaaaaaaaaaaaata____${curUserId}_____');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Login(),
-                  ),
-                );
-                _tabController.animateTo(0);
-              }
-            }
-          },
-        );
-
-        setState(
-          () {
-            _selBottom = _tabController.index;
-          },
-        );
-      },
-    );
   }
+
 
   void initDynamicLinks() async {
     /* FirebaseDynamicLinks.instance.onLink(
@@ -625,10 +627,10 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
           : <Widget>[
 
         IconButton(
-          icon: SvgPicture.asset(
-            imagePath + "search.svg",
-            height: 20,
-            color: colors.darkIcon,
+          icon: Image.asset(
+            imagePath + "search.png",
+            height: 40,
+            // color: colors.darkIcon,
           ),
           onPressed: () {
             Navigator.push(
@@ -640,9 +642,9 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
           },
         ),
         IconButton(
-          icon: SvgPicture.asset(
-            imagePath + "desel_notification.svg",
-            color: colors.darkIcon,
+          icon: Image.asset(
+            imagePath + "desel_notification.png",
+            // color: colors.darkIcon,
           ),
           onPressed: () async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -660,21 +662,7 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
                 ));
           },
         ),
-        IconButton(
-          icon: SvgPicture.asset(
-            imagePath + "email.svg",
-            height: 25,
-            color: colors.darkIcon,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Search(),
-              ),
-            );
-          },
-        ),
+
       ],
     );
   }
@@ -932,10 +920,10 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
                     _selBottom == 3 ? getTranslated(context, 'ACCOUNT') : null,
               ),
             ],
-            indicator: UnderlineTabIndicator(
+         /*   indicator: UnderlineTabIndicator(
               borderSide: BorderSide(color: colors.primary, width: 5.0),
               insets: EdgeInsets.fromLTRB(50.0, 0.0, 50.0, 70.0),
-            ),
+            ),*/
             labelColor: colors.primary,
             labelStyle: TextStyle(fontSize: 8, fontWeight: FontWeight.w600),
           ),

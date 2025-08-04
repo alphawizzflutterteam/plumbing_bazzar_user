@@ -6,6 +6,7 @@ final Uri getSliderApi = Uri.parse(baseUrl + 'get_slider_video');
 // final Uri getSliderApi = Uri.parse(baseUrl + 'get_slider_images');
 final Uri getCatApi = Uri.parse(baseUrl + 'get_categories');
 final Uri getCatApi1 = Uri.parse(baseUrl + 'get_category_section_data');
+final Uri getCatOff = Uri.parse(baseUrl + 'get_category_slider');
 final Uri getUserDetailsApi = Uri.parse(baseUrl + 'get_user_details');
 final Uri updateUserApi = Uri.parse(baseUrl + 'update_user');
 final Uri getSectionApi = Uri.parse(baseUrl + 'get_sections');
