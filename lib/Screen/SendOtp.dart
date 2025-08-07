@@ -420,45 +420,6 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
         });
   }
 
-  // Widget setMono() {
-  //   return TextFormField(
-  //     maxLength: 10,
-  //     keyboardType: TextInputType.number,
-  //     controller: mobileController,
-  //     style: Theme.of(context).textTheme.subtitle2!.copyWith(
-  //       color: Theme.of(context).colorScheme.fontColor,
-  //       fontWeight: FontWeight.normal,
-  //     ),
-  //     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-  //     validator: (val) => validateMob(
-  //       val!,
-  //       getTranslated(context, 'MOB_REQUIRED'),
-  //       getTranslated(context, 'VALID_MOB'),
-  //     ),
-  //     onSaved: (String? value) {
-  //       mobile = value;
-  //     },
-  //     decoration: InputDecoration(
-  //       counterText: '',
-  //       hintText: getTranslated(context, 'MOBILEHINT_LBL'),
-  //       hintStyle: Theme.of(context).textTheme.subtitle2!.copyWith(
-  //         color: Colors.grey, // ⬅️ Hint text in grey
-  //         fontWeight: FontWeight.normal,
-  //       ),
-  //       filled: true,
-  //       fillColor: Colors.white, // ⬅️ White background
-  //       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-  //       enabledBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10), // ⬅️ Rounded corners
-  //         borderSide: const BorderSide(color: Colors.grey), // ⬅️ Grey border
-  //       ),
-  //       focusedBorder: OutlineInputBorder(
-  //         borderRadius: BorderRadius.circular(10),
-  //         borderSide: BorderSide(color: Colors.grey.shade700), // Darker grey when focused
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget setMono() {
     return TextFormField(
       maxLength: 10,
@@ -508,43 +469,6 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
     );
   }
 
-  // Widget setMono() {
-  //   return TextFormField(
-  //       maxLength: 10,
-  //       keyboardType: TextInputType.number,
-  //       controller: mobileController,
-  //       style: Theme.of(context).textTheme.subtitle2!.copyWith(
-  //           color: Theme.of(context).colorScheme.fontColor,
-  //           fontWeight: FontWeight.normal),
-  //       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-  //       validator: (val) => validateMob(
-  //           val!,
-  //           getTranslated(context, 'MOB_REQUIRED'),
-  //           getTranslated(context, 'VALID_MOB')),
-  //       onSaved: (String? value) {
-  //         mobile = value;
-  //       },
-  //       decoration: InputDecoration(
-  //         counterText: '',
-  //         hintText: getTranslated(context, 'MOBILEHINT_LBL'),
-  //         hintStyle: Theme.of(context).textTheme.subtitle2!.copyWith(
-  //             color: Theme.of(context).colorScheme.fontColor,
-  //             fontWeight: FontWeight.normal),
-  //         contentPadding:
-  //             const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-  //         // focusedBorder: OutlineInputBorder(
-  //         //   borderSide: BorderSide(color: Theme.of(context).colorScheme.lightWhite),
-  //         // ),
-  //         focusedBorder: UnderlineInputBorder(
-  //           borderSide: BorderSide(color: colors.primary),
-  //           borderRadius: BorderRadius.circular(7.0),
-  //         ),
-  //         enabledBorder: UnderlineInputBorder(
-  //           borderSide:
-  //               BorderSide(color: Theme.of(context).colorScheme.lightWhite),
-  //         ),
-  //       ));
-  // }
 
   Widget verifyBtn() {
     return AppBtn(
@@ -593,70 +517,6 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
       ),
     );
   }
- /* Widget termAndPolicyTxt() {
-    return widget.title == getTranslated(context, 'SEND_OTP_TITLE')
-        ? Padding(
-            padding: const EdgeInsets.only(
-                bottom: 30.0, left: 25.0, right: 25.0, top: 10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(getTranslated(context, 'CONTINUE_AGREE_LBL')!,
-                    style: Theme.of(context).textTheme.caption!.copyWith(
-                        color: Theme.of(context).colorScheme.fontColor,
-                        fontWeight: FontWeight.normal)),
-                const SizedBox(
-                  height: 3.0,
-                ),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PrivacyPolicy(
-                                      title: getTranslated(context, 'TERM'),
-                                    )));
-                      },
-                      child: Text(
-                        getTranslated(context, 'TERMS_SERVICE_LBL')!,
-                        style: Theme.of(context).textTheme.caption!.copyWith(
-                            color: Theme.of(context).colorScheme.fontColor,
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.normal),
-                      )),
-                  const SizedBox(
-                    width: 5.0,
-                  ),
-                  Text(getTranslated(context, 'AND_LBL')!,
-                      style: Theme.of(context).textTheme.caption!.copyWith(
-                          color: Theme.of(context).colorScheme.fontColor,
-                          fontWeight: FontWeight.normal)),
-                  const SizedBox(
-                    width: 5.0,
-                  ),
-                  InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PrivacyPolicy(
-                                      title: getTranslated(context, 'PRIVACY'),
-                                    )));
-                      },
-                      child: Text(
-                        getTranslated(context, 'PRIVACY')!,
-                        style: Theme.of(context).textTheme.caption!.copyWith(
-                            color: Theme.of(context).colorScheme.fontColor,
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.normal),
-                      )),
-                ]),
-              ],
-            ),
-          )
-        : Container();
-  }*/
 
   backBtn() {
     return Platform.isIOS
@@ -675,8 +535,42 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
             ))
         : Container();
   }
-
+  double? deviceWidth;
   @override
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ));
+
+    buttonController = AnimationController(
+      duration: Duration(milliseconds: 2000),
+      vsync: this,
+    );
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Only initialize once
+    if (deviceWidth == null) {
+      deviceWidth = MediaQuery.of(context).size.width;
+
+      buttonSqueezeanimation = Tween(
+        begin: deviceWidth! * 0.7,
+        end: 50.0,
+      ).animate(CurvedAnimation(
+        parent: buttonController!,
+        curve: Interval(0.0, 0.150),
+      ));
+    }
+  }
+/*
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top]);
@@ -687,8 +581,19 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
     super.initState();
     buttonController = AnimationController(
         duration: Duration(milliseconds: 2000), vsync: this);
+    if (deviceWidth == null) {
+      deviceWidth = MediaQuery.of(context).size.width;
 
-    buttonSqueezeanimation = Tween(
+      buttonSqueezeanimation = Tween(
+        begin: deviceWidth! * 0.7,
+        end: 50.0,
+      ).animate(CurvedAnimation(
+        parent: buttonController!,
+        curve: Interval(0.0, 0.150),
+      ));
+    }
+  */
+/*  buttonSqueezeanimation = Tween(
       begin: deviceWidth! * 0.7,
       end: 50.0,
     ).animate(CurvedAnimation(
@@ -697,21 +602,20 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
         0.0,
         0.150,
       ),
-    ));
+    ));*//*
+
   }
+*/
 
   _subLogo() {
-    return Expanded(
-      flex: 4,
-      child: Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 30 / 100,
-          height: MediaQuery.of(context).size.height * 10 / 100,
-          child: Center(
-            child: Image.asset(
-              'assets/images/titleicon.png',
-              fit: BoxFit.contain,
-            ),
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 30 / 100,
+        height: MediaQuery.of(context).size.height * 10 / 100,
+        child: Center(
+          child: Image.asset(
+            'assets/images/titleicon.png',
+            fit: BoxFit.contain,
           ),
         ),
       ),
@@ -726,7 +630,7 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
       fit: BoxFit.contain,
     );
   }
-
+/*
   @override
   Widget build(BuildContext context) {
     deviceHeight = MediaQuery.of(context).size.height;
@@ -756,19 +660,7 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
                           right: 0,
                           child: welcomeEshopTxt(),
                         ),
-                        // _subLogo(),
-                        // backBtn(),
-                        // Container(
-                        //   width: double.infinity,
-                        //   height: double.infinity,
-                        //   decoration: back(),
-                        // ),
-                        // Image.asset(
-                        //   'assets/images/titleicon.png',
-                        //   fit: BoxFit.fill,
-                        //   width: double.infinity,
-                        //   height: double.infinity,
-                        // ),
+
                         getLoginContainer(),
                         // getLogo(),
                       ],
@@ -776,21 +668,36 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
                   ),
                 ),
               )
-            // Container(
-            //     color: Theme.of(context).colorScheme.lightWhite,
-            //     padding: EdgeInsets.only(
-            //       bottom: 20.0,
-            //     ),
-            //     child: Column(
-            //       children: <Widget>[
-            //         backBtn(),
-            //         subLogo(),
-            //         expandedBottomView(),
-            //       ],
-            //     ))
-            : noInternet(context));
-  }
 
+            : noInternet(context));
+  }*/
+  @override
+  Widget build(BuildContext context) {
+    deviceHeight = MediaQuery.of(context).size.height;
+    deviceWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      key: _scaffoldKey,
+      body: _isNetworkAvail
+          ? SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // SizedBox(height: 30),
+              _subLogo(),
+              // SizedBox(height: 20),
+              welcomeEshopTxt(),
+              // SizedBox(height: 20),
+              getLoginContainer(),
+              // SizedBox(height: 20),
+            ],
+          ),
+        ),
+      )
+          : noInternet(context),
+    );
+  }
   signInTxt() {
     return Padding(
         padding: EdgeInsetsDirectional.only(
@@ -807,77 +714,161 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
         ));
   }
 
-  // getLoginContainer() {
-  //   return Positioned.directional(
-  //     start: MediaQuery.of(context).size.width * 0.025,
-  //     // end: width * 0.025,
-  //     // top: width * 0.45,
-  //     top: MediaQuery.of(context).size.height * 0.2, // //original
-  //     //    bottom: height * 0.1,
-  //     textDirection: Directionality.of(context),
-  //     child: ClipPath(
-  //       clipper: ContainerClipper(),
-  //       child: Container(
-  //         alignment: Alignment.center,
-  //         padding: EdgeInsets.only(
-  //             bottom: MediaQuery.of(context).viewInsets.bottom * 0.6),
-  //         height: MediaQuery.of(context).size.height * 0.7,
-  //         width: MediaQuery.of(context).size.width * 0.95,
-  //         color: Theme.of(context).colorScheme.white,
-  //         child: Form(
-  //           key: _formkey,
-  //           child: ScrollConfiguration(
-  //             behavior: MyBehavior(),
-  //             child: SingleChildScrollView(
-  //               child: ConstrainedBox(
-  //                 constraints: BoxConstraints(
-  //                   maxHeight: MediaQuery.of(context).size.height * 2,
-  //                 ),
-  //                 child: Column(
-  //                   mainAxisSize: MainAxisSize.min,
-  //                   children: [
-  //                     SizedBox(
-  //                       height: MediaQuery.of(context).size.height * 0.10,
-  //                     ),
-  //                     Padding(
-  //                       padding: const EdgeInsets.symmetric(horizontal: 15),
-  //                       child: Align(
-  //                         alignment: Alignment.topLeft,
-  //                         child: Text(
-  //                           widget.title ==
-  //                                   getTranslated(context, 'SEND_OTP_TITLE')
-  //                               ? getTranslated(context, 'SIGN_UP_LBL')!
-  //                               : getTranslated(
-  //                                   context, 'FORGOT_PASSWORDTITILE')!,
-  //                           style: const TextStyle(
-  //                             color: colors.primary,
-  //                             fontSize: 30,
-  //                             fontWeight: FontWeight.bold,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     // setMobileNo(),
-  //                     // setPass(),
-  //                     // loginBtn(),
-  //                     verifyCodeTxt(),
-  //                     setCodeWithMono(),
-  //                     verifyBtn(),
-  //                     termAndPolicyTxt(),
-  //                     SizedBox(
-  //                       height: MediaQuery.of(context).size.height * 0.10,
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
+  // Widget getLoginContainer() {
+  //   return Container(
+  //     alignment: Alignment.center,
+  //     // margin: EdgeInsets.symmetric(horizontal: 20),
+  //     padding: EdgeInsets.only(top: 10),
+  //     decoration: BoxDecoration(
+  //       color: ColorResources.secondary,
+  //       borderRadius: BorderRadius.circular(30),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black12,
+  //           offset: Offset(0, 4),
+  //           blurRadius: 15,
+  //           spreadRadius: 1,
+  //         ),
+  //       ],
+  //     ),
+  //     child: Form(
+  //       key: _formkey,
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Text(
+  //             "Hello! Register to get",
+  //             style: Theme.of(context).textTheme.subtitle1!.copyWith(
+  //               fontSize: 20,
+  //               fontWeight: FontWeight.bold,
   //             ),
   //           ),
-  //         ),
+  //           Text(
+  //             "Standard",
+  //             style: Theme.of(context).textTheme.subtitle1!.copyWith(
+  //               fontSize: 18,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //           ),
+  //           SizedBox(height: 30),
+  //           setCodeWithMono(),
+  //           SizedBox(height: 20),
+  //           verifyBtn(),
+  //           SizedBox(height: 20),
+  //           termAndPolicyTxt(),
+  //         ],
   //       ),
   //     ),
   //   );
   // }
+/*  @override
+  Widget build(BuildContext context) {
+    deviceHeight = MediaQuery.of(context).size.height;
+    deviceWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      key: _scaffoldKey,
+      body: _isNetworkAvail
+          ? SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              _subLogo(),
+              SizedBox(height: 20),
+              welcomeEshopTxt(),
+              SizedBox(height: 20),
+              getLoginContainer(),
+              SizedBox(height: 20),
+            ],
+          ),
+        ),
+      )
+          : noInternet(context),
+    );
+  }*/
+
+// Fixed _subLogo method - REMOVED Expanded
+/*  Widget _subLogo() {
+    return Container(
+      height: 80, // Fixed height instead of Expanded
+      child: Center(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 30 / 100,
+          height: MediaQuery.of(context).size.height * 10 / 100,
+          child: Center(
+            child: Image.asset(
+              'assets/images/titleicon.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ),
+    );
+  }*/
+
+// Fixed welcomeEshopTxt method
+/*  Widget welcomeEshopTxt() {
+    return Container(
+      height: 300, // Fixed height
+      child: Image.asset(
+        'assets/images/login_top_image.png',
+        height: 380,
+        width: 380,
+        fit: BoxFit.contain,
+      ),
+    );
+  }*/
+
   Widget getLoginContainer() {
+    return Container(
+      alignment: Alignment.center,
+      // margin: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.only(top: 20, bottom: 20),
+      decoration: BoxDecoration(
+        color: ColorResources.secondary,
+        borderRadius: BorderRadius.circular(30),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black12,
+        //     offset: Offset(0, 4),
+        //     blurRadius: 15,
+        //     spreadRadius: 1,
+        //   ),
+        // ],
+      ),
+      child: Form(
+        key: _formkey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Hello! Register to get",
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "Standard",
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 30),
+            setCodeWithMono(),
+            SizedBox(height: 10),
+            verifyBtn(),
+            // SizedBox(height: 10),
+            termAndPolicyTxt(),
+          ],
+        ),
+      ),
+    );
+  }
+ /* Widget getLoginContainer() {
     // final mediaQuery = MediaQuery.of(context);
 
     return Positioned.directional(
@@ -902,14 +893,14 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
             decoration: BoxDecoration(
               color: ColorResources.secondary, // 🔵 Blue background
               borderRadius: BorderRadius.circular(30), // 🎯 Rounded corners
-            /*  boxShadow: [
+            *//*  boxShadow: [
                 BoxShadow(
                   color: Colors.black26, // darker shadow for depth
                   offset: Offset(0, 8),
                   blurRadius: 25,
                   spreadRadius: 2,
                 ),
-              ],*/
+              ],*//*
             ),
             child: Form(
               key: _formkey,
@@ -965,7 +956,7 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
         ],
       ),
     );
-  }
+  }*/
 
   Widget getLogo() {
     return Positioned(

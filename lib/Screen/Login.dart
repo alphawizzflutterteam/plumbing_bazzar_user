@@ -453,16 +453,13 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
   }
 
   _subLogo() {
-    return Expanded(
-      flex: 4,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 30 / 100,
-        height: MediaQuery.of(context).size.height * 10 / 100,
-        child: Center(
-          child: Image.asset(
-            'assets/images/titleicon.png',
-            fit: BoxFit.contain,
-          ),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 30 / 100,
+      height: MediaQuery.of(context).size.height * 10 / 100,
+      child: Center(
+        child: Image.asset(
+          'assets/images/titleicon.png',
+          fit: BoxFit.contain,
         ),
       ),
     );
@@ -877,7 +874,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
 
   Widget setCodeWithMono() {
     return Container(
-        width: deviceWidth! * 0.9,
+        width: deviceWidth! * 0.8,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -1023,12 +1020,12 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
     return Image.asset(
       'assets/images/login_top_image.png',
       height: 380,
-      width: 380,
+      width: 330,
       fit: BoxFit.contain,
     );
   }
 
-  @override
+/*  @override
   Widget build(BuildContext context) {
     print("gfdgfgfdfgdgdgdfgd${widget.title}");
     return Scaffold(
@@ -1039,42 +1036,59 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
       body: _isNetworkAvail
           ? SafeArea(
               child: SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: MediaQuery.of(context).size.height * 95 / 100,
-                  ),
-                  child: IntrinsicHeight(
-                    // ensures minimum height is respected
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 30,
-                          left: 0,
-                          right: 0,
-                          child: _subLogo(),
-                        ),
-                        Positioned(
-                          top: 80,
-                          left: 0,
-                          right: 0,
-                          child: welcomeEshopTxt(),
-                        ),
-                        Positioned(
-                          top: 420,
-                          left: 0,
-                          right: 0,
-                          child: getLoginContainer(),
-                        ),
-                      ],
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 30,
+                      left: 0,
+                      right: 0,
+                      child: _subLogo(),
                     ),
-                  ),
+                    Positioned(
+                      top: 80,
+                      left: 0,
+                      right: 0,
+                      child: welcomeEshopTxt(),
+                    ),
+                    Positioned(
+                      top: 420,
+                      left: 0,
+                      right: 0,
+                      child: getLoginContainer(),
+                    ),
+                  ],
                 ),
               ),
             )
           : noInternet(context),
     );
+  }*/
+  @override
+  Widget build(BuildContext context) {
+    print("gfdgfgfdfgdgdgdfgd${widget.title}");
+    return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      key: _scaffoldKey,
+      body: _isNetworkAvail
+          ? SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // SizedBox(height: 30),
+              _subLogo(),
+              // SizedBox(height: 20),
+              welcomeEshopTxt(),
+              // SizedBox(height: 20),
+              getLoginContainer(),
+              // SizedBox(height: 20),
+            ],
+          ),
+        ),
+      )
+          : noInternet(context),
+    );
   }
-
   // @override
   // Widget build(BuildContext context) {
   //   return Scaffold(
@@ -1118,6 +1132,56 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
   Widget getLoginContainer() {
     final mediaQuery = MediaQuery.of(context);
 
+    return Container(
+      alignment: Alignment.center,
+      // margin: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        color: ColorResources.secondary,
+        borderRadius: BorderRadius.circular(30),
+      /*  boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            offset: Offset(0, 4),
+            blurRadius: 15,
+            spreadRadius: 1,
+          ),
+        ],*/
+      ),
+      child: Form(
+        key: _formkey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Welcome back! Glad",
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "to see you, Again!",
+              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 30),
+            setCodeWithMono(),
+            SizedBox(height: 20),
+            loginBtn(),
+            SizedBox(height: 20),
+            termAndPolicyTxt(),
+          ],
+        ),
+      ),
+    );
+  }
+
+/*  Widget getLoginContainer() {
+    final mediaQuery = MediaQuery.of(context);
+
     return Positioned.directional(
       top: 440,
       // start: mediaQuery.size.width * 0.5,
@@ -1138,14 +1202,14 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               color: ColorResources.secondary, // 🔵 Blue background
               borderRadius: BorderRadius.circular(30), // 🎯 Rounded corners
-           /*   boxShadow: [
+           *//*   boxShadow: [
                 BoxShadow(
                   color: Colors.black26, // darker shadow for depth
                   offset: Offset(0, 8),
                   blurRadius: 25,
                   spreadRadius: 2,
                 ),
-              ],*/
+              ],*//*
             ),
             child: Form(
               key: _formkey,
@@ -1196,7 +1260,7 @@ class _LoginPageState extends State<Login> with TickerProviderStateMixin {
         ],
       ),
     );
-  }
+  }*/
 
   // getLoginContainer() {
   //   return Positioned.directional(

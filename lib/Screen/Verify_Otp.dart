@@ -106,7 +106,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
     bool error = getdata["error"];
     String? msg = getdata["message"];
     dynamic? otp = getdata["otp"];
-    await buttonController!.reverse();
+    // await buttonController!.reverse();
     getVerifyUser();
     if (!error) {
       setSnackbar(msg!);
@@ -164,7 +164,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
       var getdata = json.decode(response.body);
       bool? error = getdata["error"];
       String? msg = getdata["message"];
-      await buttonController!.reverse();
+      // await buttonController?.reverse();
       print(getdata);
       SettingProvider settingsProvider =
           Provider.of<SettingProvider>(context, listen: false);
@@ -704,17 +704,14 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
   // }
 
   _subLogo() {
-    return Expanded(
-      flex: 4,
-      child: Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 30 / 100,
-          height: MediaQuery.of(context).size.height * 10 / 100,
-          child: Center(
-            child: Image.asset(
-              'assets/images/titleicon.png',
-              fit: BoxFit.contain,
-            ),
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 30 / 100,
+        height: MediaQuery.of(context).size.height * 10 / 100,
+        child: Center(
+          child: Image.asset(
+            'assets/images/titleicon.png',
+            fit: BoxFit.contain,
           ),
         ),
       ),
@@ -730,120 +727,188 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
     );
   }
 
-  @override
+ /* @override
   Widget build(BuildContext context) {
     print(widget.otp);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       key: _scaffoldKey,
       body: SingleChildScrollView(
-          child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height * 95 / 100,
-        ),
-        child: IntrinsicHeight(
-          child: Stack(
+          child: IntrinsicHeight(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 30,
+                  left: 0,
+                  right: 0,
+                  child: _subLogo(),
+                ),
+                Positioned(
+                  top: 90,
+                  left: 0,
+                  right: 0,
+                  child: welcomeEshopTxt(),
+                ),
+                // Container(
+                //   width: double.infinity,
+                //   height: double.infinity,
+                //   decoration: back(),
+                // ),
+                // Image.asset(
+                //   'assets/images/doodle.png',
+                //   fit: BoxFit.fill,
+                //   width: double.infinity,
+                //   height: double.infinity,
+                // ),
+                Positioned(
+                  top: 450,
+                  bottom: 2,
+                  left: 0,
+                  right: 0,
+                  child: getLoginContainer(),
+                )
+                // getLogo(),
+              ],
+            ),
+          )),
+    );
+  }*/
+  @override
+  Widget build(BuildContext context) {
+    print(widget.otp);
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      key: _scaffoldKey,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              Positioned(
-                top: 30,
-                left: 0,
-                right: 0,
-                child: _subLogo(),
+              // Top spacing
+              const SizedBox(height: 30),
+
+              // Logo
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.3,
+                height: 60,
+                child: Image.asset(
+                  'assets/images/titleicon.png',
+                  fit: BoxFit.contain,
+                ),
               ),
-              Positioned(
-                top: 90,
-                left: 0,
-                right: 0,
-                child: welcomeEshopTxt(),
+
+              // Spacing
+              const SizedBox(height: 20),
+
+              // Welcome image
+              Image.asset(
+                'assets/images/login_top_image.png',
+                height: 280,
+                width: 280,
+                fit: BoxFit.contain,
               ),
-              // Container(
-              //   width: double.infinity,
-              //   height: double.infinity,
-              //   decoration: back(),
-              // ),
-              // Image.asset(
-              //   'assets/images/doodle.png',
-              //   fit: BoxFit.fill,
-              //   width: double.infinity,
-              //   height: double.infinity,
-              // ),
-              Positioned(
-                top: 450,
-                bottom: 2,
-                left: 0,
-                right: 0,
-                child: getLoginContainer(),
-              )
-              // getLogo(),
+
+              // Spacing
+              const SizedBox(height: 20),
+
+              // Login container
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.symmetric(horizontal: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                decoration: BoxDecoration(
+                  color: Colors.blue[50],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const Text(
+                      "Welcome back! Glad",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    Text(
+                      "to see you, Again!!!",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 15),
+                    Text(
+                      "OTP: ${widget.otp.toString()}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    // const SizedBox(height: 30),
+                    otpLayout(),
+                    // const SizedBox(height: 30),
+                    verifyBtn(),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
-      )),
+      ),
     );
   }
-
   Widget getLoginContainer() {
-    return Align(
-      alignment: Alignment.bottomCenter, // 📍 Stick to bottom
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        // Set desired height
-        height: MediaQuery.of(context).size.height * 0.75,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
         ),
-        decoration: BoxDecoration(
-          color: Colors.blue[50], // 🔵 Light blue background
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30), // 🎯 Top corners rounded
-            topRight: Radius.circular(30),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // This is now safe to use
+        children: [
+          const SizedBox(height: 10),
+          const Text(
+            "Welcome back! Glad",
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
           ),
-          /*  boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 12,
-              offset: Offset(0, -3),
-            )
-          ],*/
-        ),
-        child: Form(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 5),
-              Container(
-                  child: Text(
-                "Welcome back! Glad",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
-              )),
-              Container(
-                child: Text(
-                  "to see you, Again!!!",
-                  style: Theme.of(context)
-                      .textTheme
-                      .subtitle1!
-                      .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Container(
-                child: Text(widget.otp.toString()),
-              ),
-              // monoVarifyText(),
-              // otpText(),
-              otpLayout(), // Your updated OTP input box
-              // SizedBox(height: 5),
-              verifyBtn(),
-              // SizedBox(height: 5),
-              // resendText(),
-              // SizedBox(height: 24),
-            ],
+          Text(
+            "to see you, Again!!!",
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium!
+                .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        ),
+          const SizedBox(height: 10),
+          Text(
+            "OTP: ${widget.otp.toString()}",
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 20),
+          otpLayout(),
+          const SizedBox(height: 20),
+          verifyBtn(),
+          const SizedBox(height: 10),
+        ],
       ),
     );
   }
