@@ -387,8 +387,10 @@ class Product_Varient {
         productId: json[PRODUCT_ID],
         attr_name: json[ATTR_NAME],
         varient_value: json[VARIENT_VALUE],
-        disPrice: json[DIS_PRICE],
-        price: json[PRICE],
+        // disPrice: json[DIS_PRICE],
+        // price: json[PRICE],
+        disPrice: json[PRICE],
+        price: json[DIS_PRICE],
         availability: json[AVAILABILITY].toString(),
         cartCount: json[CART_COUNT],
         images: images);

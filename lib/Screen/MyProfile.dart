@@ -739,10 +739,10 @@ class StateProfile extends State<MyProfile> with TickerProviderStateMixin {
         if (curUserId != null && curUserId.isNotEmpty)
           _getDrawerItem(getTranslated(context, 'MYTRANSACTION')!,
               'assets/images/pro_th.svg'),
-        _getDrawerItem(getTranslated(context, 'ABOUT_LBL')!,
+        _getDrawerItem("Policies",
             'assets/images/pro_aboutus.svg'),
         _getDrawerItem(
-            getTranslated(context, 'FAQS')!, 'assets/images/pro_faq.svg'),
+            getTranslated(context, 'CONTACT_LBL')!, 'assets/images/pro_aboutus.svg'),
         _getDrawerItem(
             getTranslated(context, 'PRIVACY')!, 'assets/images/pro_pp.svg'),
         _getDrawerItem(
@@ -979,7 +979,9 @@ class StateProfile extends State<MyProfile> with TickerProviderStateMixin {
                     builder: (context) => MyOrder(),
                   ),
                 );
-              } else if (title == getTranslated(context, 'MYWALLET')) {
+              } else if (title == getTranslated(context, 'CONTACT_LBL')) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicy(title: getTranslated(context, 'CONTACT_LBL'))));
+              }else if (title == getTranslated(context, 'MYWALLET')) {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -1040,7 +1042,7 @@ class StateProfile extends State<MyProfile> with TickerProviderStateMixin {
                 var str =
                     "$appName\n\n${getTranslated(context, 'APPFIND')}$androidLink$packageName\n\n ${getTranslated(context, 'IOSLBL')}\n$iosLink";
                 Share.share(str);
-              } else if (title == getTranslated(context, 'ABOUT_LBL')) {
+              } else if (title == "Policies") {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => PoliciesScreen()));
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicy(title: getTranslated(context, 'ABOUT_LBL'))));

@@ -119,9 +119,9 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
       tahsilSearch(_tahsilController.text);
     });
 
-    // _cityController.addListener(() {
-    //   citySearch(_cityController.text);
-    // });
+    _cityController.addListener(() {
+      citySearch(_cityController.text);
+    });
 
     mobileC = new TextEditingController();
     nameC = new TextEditingController();
@@ -132,7 +132,9 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
     countryC = new TextEditingController();
     landmarkC = new TextEditingController();
 
-    if (widget.update!) {
+    print("widget.updatewidget.updatewidget.update ${widget.update}");
+
+    if (widget.update ?? false) {
       User item = addressList[widget.index!];
 
       mobileC!.text = item.mobile!;
@@ -210,7 +212,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
 
   addBtn() {
     return AppBtn(
-      title: widget.update!
+      title: widget.update ?? false
           ? getTranslated(context, 'UPDATEADD')
           : getTranslated(context, 'ADDADDRESS'),
       btnAnim: buttonSqueezeanimation,
@@ -846,6 +848,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
   //   _cityController?.clear();
   // }
   stateDialog() {
+    print("hello");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -864,7 +867,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
                   Padding(
                     padding: EdgeInsets.fromLTRB(20.0, 20.0, 0, 0),
                     child: Text(
-                      getTranslated(context, 'CITYSELECT_LBL')!,
+                      getTranslated(context, 'AREASELECT_LBL')!,
                       style: Theme.of(this.context)
                           .textTheme
                           .subtitle1!
@@ -1704,10 +1707,10 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
       // await getCities();
       await getState();
 
-      if (widget.update!) {
+      if (widget.update ?? false) {
         await getArea(addressList[widget.index!].stateId, false);
       }
-      if (widget.update!) {
+      if (widget.update ?? false) {
         getTahsil(addressList[widget.index!].cityId, false);
       }
     } else {
@@ -1745,7 +1748,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
       if (cityState != null) cityState!(() {});
       if (mounted) setState(() {});
 
-      if (widget.update!) {
+      if (widget.update ?? false) {
         selCityPos = citySearchLIst
             .indexWhere((f) => f.id == addressList[widget.index!].stateId);
 
@@ -1868,7 +1871,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
       if (cityState != null) cityState!(() {});
       if (mounted) setState(() {});
 
-      if (widget.update!) {
+      if (widget.update ?? false) {
         selCityPos = citySearchLIst
             .indexWhere((f) => f.id == addressList[widget.index!].stateId);
 
@@ -1914,7 +1917,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
 
         areaSearchList.addAll(areaList);
         areaLoading = false;
-        if (widget.update!) {
+        if (widget.update ?? false) {
           User item = addressList[widget.index ?? 0];
           for (int i = 0; i < areaSearchList.length; i++) {
             if (areaSearchList[i].id == item.cityId) {
@@ -1968,7 +1971,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
         tahsilList =
             (data as List).map((data) => new User.fromJson(data)).toList();
         tahsilSearchList.addAll(tahsilList);
-        if (widget.update!) {
+        if (widget.update ?? false) {
           User item = addressList[widget.index ?? 0];
           // for (User item in addressList) {
           for (int i = 0; i < tahsilSearchList.length; i++) {
@@ -2188,9 +2191,9 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
       print("Anjali address save_______${data}");
       print(data.toString());
       print(getAddAddressApi);
-      if (widget.update!) data[ID] = addressList[widget.index!].id;
+      if (widget.update ?? false) data[ID] = addressList[widget.index!].id;
       Response response = await post(
-              widget.update! ? updateAddressApi : getAddAddressApi,
+              widget.update ?? false ? updateAddressApi : getAddAddressApi,
               body: data,
               headers: headers)
           .timeout(Duration(seconds: timeOut));
@@ -2207,7 +2210,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
 
         if (!error) {
           var data = getdata["data"];
-          if (widget.update!) {
+          if (widget.update ?? false) {
             if (checkedDefault.toString() == "true" ||
                 addressList.length == 1) {
               for (User i in addressList) {
@@ -2216,7 +2219,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
               addressList[widget.index!].isDefault = "1";
               // if (!ISFLAT_DEL) {
               //   if (oriPrice <
-              //       double.parse(addressList[selectedAddress!].freeAmt!)) {
+              //         double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
               //     delCharge = double.parse(
               //         addressList[selectedAddress!].deliveryCharge!);
               //   } else {
@@ -2248,7 +2251,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
 
               if (!ISFLAT_DEL) {
                 if (oriPrice <
-                    double.parse(addressList[selectedAddress!].freeAmt!)) {
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                   delCharge = double.parse(
                       addressList[selectedAddress!].deliveryCharge!);
                 } else {
@@ -2260,7 +2263,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
           } else {
             print("anjali___${data}");
             User value = new User.fromAddress(data[0]);
-            print("hhnn____${value}");
+            print("hhnn____${widget.index}");
             addressList.add(value);
             if (checkedDefault.toString() == "true" ||
                 addressList.length == 1) {
@@ -2271,7 +2274,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
 
               if (!ISFLAT_DEL && addressList.length != 1) {
                 if (oriPrice <
-                    double.parse(addressList[selectedAddress!].freeAmt!)) {
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                   delCharge = double.parse(
                       addressList[selectedAddress!].deliveryCharge!);
                 } else {
@@ -2286,9 +2289,9 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
 
               if (!ISFLAT_DEL) {
                 if (totalPrice <
-                    double.parse(addressList[selectedAddress!].freeAmt!)) {
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                   delCharge = double.parse(
-                      addressList[selectedAddress!].deliveryCharge!);
+                      addressList[selectedAddress!].deliveryCharge ?? "0.0");
                 } else {
                   delCharge = 0;
                 }
@@ -2793,7 +2796,7 @@ class StateAddress extends State<AddAddress> with TickerProviderStateMixin {
       if (StateState != null) StateState!(() {});
       if (mounted) setState(() {});
 
-      if (widget.update!) {
+      if (widget.update ?? false) {
         selStatePos = StateSearchLIst
             .indexWhere((f) => f.id == addressList[widget.index!].stateId);
 

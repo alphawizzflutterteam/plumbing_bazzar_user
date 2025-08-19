@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:Plumbingbazzar/Model/Order_Model.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 import '../Helper/AppBtn.dart';
 import '../Helper/Color.dart';
@@ -245,6 +247,7 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
                                   physics: AlwaysScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
                                     OrderItem? orderItem;
+                                    print("searchList.length data ${searchList[index]}, ${searchList.first.itemList}");
                                     try {
                                       if (searchList[index] != null &&
                                           searchList[index].itemList!.length >
@@ -258,7 +261,9 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
                                               0) {
                                         getOrder();
                                       }
-                                    } on Exception catch (_) {}
+                                    } on Exception catch (_) {
+                                      print("searchList.length data eror");
+                                    }
 
                                     return orderItem == null
                                         ? Container()
@@ -295,6 +300,7 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
   }
 
   Future<Null> getOrder() async {
+    print("called gere");
     _isNetworkAvail = await isNetworkAvailable();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? curUserId = prefs.getString('CUR_USERID');
@@ -302,6 +308,7 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
       try {
         if (isLoadingmore) {
           if (mounted) {
+            print("offsetm ${offset.toString()}");
             setState(() {
               isLoadingmore = false;
               isGettingdata = true;
@@ -312,58 +319,83 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
           }
 
           if (curUserId != null) {
-            var parameter = {
+            print("offset ${offset.toString()}");
+            var parameter = json.encode({
               USER_ID: curUserId,
               OFFSET: offset.toString(),
               LIMIT: perPage.toString(),
               SEARCH: _searchText.trim(),
-            };
-            if (activeStatus != null) {
-              if (activeStatus == awaitingPayment) activeStatus = "awaiting";
-              parameter[ACTIVE_STATUS] = activeStatus!;
-            }
-            Response response =
-                await post(getOrderApi, body: parameter, headers: headers)
-                    .timeout(Duration(seconds: timeOut));
+            });
 
-            print(getOrderApi.toString());
-            print(parameter.toString());
+            // var parameter = {
+            //   "user_id": curUserId,
+            //   "offset": offset,
+            //   "limit": perPage,
+            //   "search": _searchText.trim(),
+            // };
+            // if (activeStatus != null) {
+            //   if (activeStatus == awaitingPayment) activeStatus = "awaiting";
+            //   parameter[ACTIVE_STATUS] = activeStatus!;
+            // }
+            // Response response =
+            //     await post(getOrderApi, body: parameter, headers: headers)
+            //         .timeout(Duration(seconds: timeOut));
 
-            var getdata = json.decode(response.body);
-            print(getOrderApi);
-            print(parameter.toString());
-            print(getdata.toString());
+            var req = await http.MultipartRequest('POST', Uri.parse('https://plumbing-new.alphawizzserver.com/seller/app/v1/api/get_orders'));
+            req.fields.addAll({
+              'user_id': curUserId,
+              'limit': perPage.toString(),
+              'offset': offset.toString(),
+              'search': _searchText.trim(),
+            });
+
+            http.StreamedResponse response = await req.send();
+
+            var getdata = json.decode(await response.stream.bytesToString());
+            // print(getOrderApi);
+            // print(parameter.toString());
+            log("data ssss c ${getdata}");
             bool error = getdata["error"];
 
             isGettingdata = false;
             if (offset == 0) isNodata = error;
 
             if (!error) {
-              // total = int.parse(getdata["total"]);
+              total = int.parse(getdata["total"]);
 
-              //  if ((offset) < total) {
+               if ((offset) < total) {
               var data = getdata["data"];
               if (data.length != 0) {
                 List<OrderModel> items = [];
-                List<OrderModel> allitems = [];
+                // List<OrderModel> allitems = [];
 
                 items.addAll((data as List)
                     .map((data) => OrderModel.fromJson(data))
                     .toList());
 
-                allitems.addAll(items);
+                print("outuegf ${items.first.itemList}");
 
-                for (OrderModel item in items) {
-                  searchList.where((i) => i.id == item.id).map((obj) {
-                    allitems.remove(item);
-                    return obj;
-                  }).toList();
-                }
-                searchList.addAll(allitems);
+                // allitems.addAll(items);
 
-                isLoadingmore = true;
-                _isLoading = false;
-                offset = offset + perPage;
+                // for (OrderModel item in items) {
+                //   searchList.where((i) => i.id == item.id).map((obj) {
+                //     allitems.remove(item);
+                //     return obj;
+                //   }).toList();
+                // }
+
+                // offset = offset + 1;
+                setState(() {
+                    print("data updateddd");
+                    searchList.addAll(items);
+
+                  // searchList = items;
+                  print("perPage ${perPage}");
+
+                  isLoadingmore = true;
+                  _isLoading = false;
+                  offset = offset + perPage;
+                });
               } else {
                 isLoadingmore = false;
               }
@@ -372,8 +404,8 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
               //     .map((data) => new OrderModel.fromJson(data))
               //     .toList();
               // searchList.addAll(orderList);
-              // offset = offset + perPage;
-              // }
+              offset = offset + perPage;
+              }
             } else {
               isLoadingmore = false;
             }
@@ -385,7 +417,7 @@ class StateMyOrder extends State<MyOrder> with TickerProviderStateMixin {
               });
             }
           } else {
-            if (mounted) if (mounted) {
+            if (mounted) {
               setState(() {
                 isLoadingmore = false;
                 //msg = goToLogin;

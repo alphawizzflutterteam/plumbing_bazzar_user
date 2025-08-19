@@ -1208,13 +1208,13 @@ class StateWallet extends State<MyWallet> with TickerProviderStateMixin {
                                         Theme.of(context).colorScheme.fontColor,
                                     fontWeight: FontWeight.bold));
                       }),
-                      SimBtn(
-                        size: 0.8,
-                        title: getTranslated(context, "ADD_MONEY"),
-                        onBtnSelected: () {
-                          _showDialog();
-                        },
-                      ),
+                      // SimBtn(
+                      //   size: 0.8,
+                      //   title: getTranslated(context, "ADD_MONEY"),
+                      //   onBtnSelected: () {
+                      //     _showDialog();
+                      //   },
+                      // ),
                     ],
                   ),
                 ),

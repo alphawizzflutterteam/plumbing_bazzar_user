@@ -49,29 +49,29 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    final popupController = Get.put(PopupController());
+    // final popupController = Get.put(PopupController());
 
     _tabController = TabController(length: 5, vsync: this);
 
     // Show popup on Home tab after UI build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      popupController.setContext(context);
-      if (_tabController.index == 0) {
-        popupController.fetchAndStartPopup();
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   popupController.setContext(context);
+    //   if (_tabController.index == 0) {
+    //     popupController.fetchAndStartPopup();
+    //   }
+    // });
 
     _tabController.addListener(() async {
       if (!_tabController.indexIsChanging) {
         final index = _tabController.index;
 
         // 👇 Show popup only on Home tab
-        if (index == 0) {
-          popupController.setContext(context);
-          popupController.fetchAndStartPopup();
-        } else {
-          popupController.stopPopup();
-        }
+        // if (index == 0) {
+        //   popupController.setContext(context);
+        //   popupController.fetchAndStartPopup();
+        // } else {
+        //   popupController.stopPopup();
+        // }
 
         // 👇 Check login on tab 3
         if (index == 3) {
@@ -283,7 +283,7 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
     String? title;
 
     if (_selBottom == 1)
-      title = "Favorite";
+      title = "Favourite";
     else if (_selBottom == 2)
       title = "My Cart";
     // title = getTranslated(context, 'OFFER');
@@ -310,7 +310,7 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
     String? title;
 
     if (_selBottom == 1)
-      title = "Favorite";
+      title = "Favourite";
     else if (_selBottom == 2)
       title = "My Cart";
     // title = getTranslated(context, 'OFFER');
@@ -321,7 +321,7 @@ class _HomePageState extends State<Dashboard> with TickerProviderStateMixin {
       toolbarHeight: 80,
       centerTitle: true,
       title: Text(
-        "Favorite",
+        "Favourite",
         style: TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,

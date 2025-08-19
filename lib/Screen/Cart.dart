@@ -1705,7 +1705,7 @@
 //               delCharge = 0;
 //             } else {
 //               if ((oriPrice) <
-//                   double.parse(addressList[selectedAddress!].freeAmt!))
+//                     double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
 //                 delCharge =
 //                     double.parse(addressList[selectedAddress!].deliveryCharge!);
 //               else
@@ -1801,7 +1801,7 @@
 //
 //             if (!ISFLAT_DEL) {
 //               if ((oriPrice) <
-//                   double.parse(addressList[selectedAddress!].freeAmt!))
+//                     double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
 //                 delCharge =
 //                     double.parse(addressList[selectedAddress!].deliveryCharge!);
 //               else
@@ -1904,7 +1904,7 @@
 //           if (!ISFLAT_DEL) {
 //             if (addressList.length > 0 &&
 //                 (oriPrice) <
-//                     double.parse(addressList[selectedAddress!].freeAmt!)) {
+//                       double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
 //               delCharge =
 //                   double.parse(addressList[selectedAddress!].deliveryCharge!);
 //             } else {
@@ -2019,7 +2019,7 @@
 //
 //               if (!ISFLAT_DEL) {
 //                 if ((oriPrice) <
-//                     double.parse(addressList[selectedAddress!].freeAmt!))
+//                       double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
 //                   delCharge = double.parse(
 //                       addressList[selectedAddress!].deliveryCharge!);
 //                 else
@@ -2145,7 +2145,7 @@
 //               if (!ISFLAT_DEL) {
 //                 try {
 //                   if ((oriPrice) <
-//                       double.parse(addressList[selectedAddress!].freeAmt!))
+//                         double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
 //                     delCharge = double.parse(
 //                         addressList[selectedAddress!].deliveryCharge!);
 //                   else
@@ -4404,6 +4404,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
                     _showContent(context),
                     Selector<CartProvider, bool>(
                       builder: (context, data, child) {
+                        print("progress is enableddd! ${bool}");
                         return showCircularProgress(data, colors.primary);
                       },
                       selector: (_, provider) => provider.isProgress,
@@ -6074,7 +6075,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
               delCharge = 0;
             } else {
               if ((oriPrice) <
-                  double.parse(addressList[selectedAddress!].freeAmt!))
+                    double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
                 delCharge =
                     double.parse(addressList[selectedAddress!].deliveryCharge!);
               else
@@ -6173,7 +6174,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
 
             if (!ISFLAT_DEL) {
               if ((oriPrice) <
-                  double.parse(addressList[selectedAddress!].freeAmt!))
+                    double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
                 delCharge =
                     double.parse(addressList[selectedAddress!].deliveryCharge!);
               else
@@ -6277,7 +6278,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
           if (!ISFLAT_DEL) {
             if (addressList.length > 0 &&
                 (oriPrice) <
-                    double.parse(addressList[selectedAddress!].freeAmt!)) {
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
               delCharge =
                   double.parse(addressList[selectedAddress!].deliveryCharge!);
             } else {
@@ -6394,7 +6395,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
 
               if (!ISFLAT_DEL) {
                 if ((oriPrice) <
-                    double.parse(addressList[selectedAddress!].freeAmt!))
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
                   delCharge = double.parse(
                       addressList[selectedAddress!].deliveryCharge!);
                 else
@@ -6523,7 +6524,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
               if (!ISFLAT_DEL) {
                 try {
                   if ((oriPrice) <
-                      double.parse(addressList[selectedAddress!].freeAmt!))
+                        double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0"))
                     delCharge = double.parse(
                         addressList[selectedAddress!].deliveryCharge!);
                   else
@@ -7057,6 +7058,8 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
                                                                   Payment(
                                                                       updateCheckout,
                                                                       msg)));
+
+                                                      print("place order truee");
                                                       checkoutState!(() {
                                                         _placeOrder = true;
                                                       });
@@ -7612,6 +7615,7 @@ class StateCart extends State<Cart> with TickerProviderStateMixin {
         Response response =
             await post(placeOrderApi, body: parameter, headers: headers)
                 .timeout(Duration(seconds: timeOut));
+        log("PLACE ORDER PARAMETERbody==== ${response.body}");
         print(placeOrderApi.toString());
         print(parameter.toString());
         _placeOrder = true;

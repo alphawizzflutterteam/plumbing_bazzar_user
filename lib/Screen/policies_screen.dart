@@ -217,8 +217,8 @@ class _PoliciesScreenState extends State<PoliciesScreen> {
       physics: BouncingScrollPhysics(),
       children: <Widget>[
 
-        _getDrawerItem(
-            getTranslated(context, 'FAQS')!, 'assets/images/pro_faq.svg'),
+        // _getDrawerItem(
+        //     getTranslated(context, 'FAQS')!, 'assets/images/pro_faq.svg'),
         // _getDivider(),
         _getDrawerItem(
             getTranslated(context, 'PRIVACY')!, 'assets/images/pro_pp.svg'),
@@ -229,8 +229,8 @@ class _PoliciesScreenState extends State<PoliciesScreen> {
 
         _getDrawerItem(
             getTranslated(context, 'TERM')!, 'assets/images/pro_tc.svg'),
-        _getDrawerItem(getTranslated(context, 'CONTACT_LBL')!,
-            'assets/images/pro_aboutus.svg'),
+        // _getDrawerItem(getTranslated(context, 'CONTACT_LBL')!,
+        //     'assets/images/pro_aboutus.svg'),
         // _getDivider(),
         // _getDrawerItem(
         //     getTranslated(context, 'RATE_US')!, 'assets/images/pro_rateus.svg'),
