@@ -2255,7 +2255,7 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
         context.read<SettingProvider>().saveUserDetail(id!, name, email, mobile,
             city, area, address, pincode, latitude, longitude, "", context);
 
-        Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
+        Navigator.pushNamedAndRemoveUntil(context, "/Login", (r) => false);
       } else {
         setSnackbar(msg!);
       }
@@ -2600,7 +2600,7 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
                     setUserName(),
                     setEmail(),
                     setUserGstNO(),
-                    setUserContact(),
+                    // setUserContact(),
                     setUserLongitute(),
                     setUserRef(),
                     verifyBtn(),
@@ -2810,7 +2810,9 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
         keyboardType: TextInputType.text,
         textCapitalization: TextCapitalization.words,
         controller: gstController,
+        maxLength: 15,
         focusNode: nameFocus,
+
         textInputAction: TextInputAction.next,
         style: TextStyle(
           color: Colors.grey[800],
@@ -2823,9 +2825,10 @@ class _SignUpPageState extends State<SignUp> with TickerProviderStateMixin {
           _fieldFocusChange(context, nameFocus!, emailFocus);
         },
         decoration: InputDecoration(
+          counterText: "",
           filled: true,
           fillColor: Colors.white,
-          hintText: "GSt Number",
+          hintText: "GST Number",
           hintStyle: TextStyle(
             color: Colors.grey,
             fontWeight: FontWeight.normal,

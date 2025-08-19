@@ -109,7 +109,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
     // await buttonController!.reverse();
     getVerifyUser();
     if (!error) {
-      setSnackbar(msg!);
+      // setSnackbar(msg!);
       var i = getdata["data"][0];
       id = i[ID];
       username = i[USERNAME];
@@ -147,7 +147,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
           ));*/
       // Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
     } else {
-      setSnackbar(msg!);
+      // setSnackbar(msg!);
     }
   }
   Future<void> getVerifyUser() async {
@@ -193,14 +193,14 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
             );
           });
         } else {
-          setSnackbar(msg!);
+          // setSnackbar(msg!);
         }
       } else {
         if (widget.title == getTranslated(context, 'FORGOT_PASS_TITLE')) {
           if (!error!) {
             String otp = getdata["data"];
-            Fluttertoast.showToast(
-                msg: otp.toString(), backgroundColor: colors.primary);
+            // Fluttertoast.showToast(
+            //     msg: otp.toString(), backgroundColor: colors.primary);
             // setSnackbar(otp.toString());
             // settingsProvider.setPrefrence(MOBILE, mobile!);
             // settingsProvider.setPrefrence(COUNTRY_CODE, countrycode!);
@@ -332,7 +332,7 @@ class _MobileOTPState extends State<VerifyOtp> with TickerProviderStateMixin {
           Provider.of<SettingProvider>(context, listen: false);
       getLoginUser();
 
-      setSnackbar(getTranslated(context, 'OTPMSG')!);
+      // setSnackbar(getTranslated(context, 'OTPMSG')!);
       Fluttertoast.showToast(
           msg: getTranslated(context, 'OTPMSG')!,
           backgroundColor: colors.primary);

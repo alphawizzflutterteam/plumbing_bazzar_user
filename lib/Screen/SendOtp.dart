@@ -146,7 +146,7 @@ class _SendOtpState extends State<SendOtp> with TickerProviderStateMixin {
     dynamic? otp = getdata["otp"];
     await buttonController!.reverse();
     if (!error) {
-      setSnackbar(msg!);
+      // setSnackbar(msg!);
       var i = getdata["data"][0];
       id = i[ID];
       username = i[USERNAME];
@@ -184,7 +184,7 @@ class _SendOtpState extends State<SendOtp> with TickerProviderStateMixin {
           ));*/
       // Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
     } else {
-      setSnackbar(msg!);
+      // setSnackbar(msg!);
     }
   }
 
@@ -232,14 +232,14 @@ class _SendOtpState extends State<SendOtp> with TickerProviderStateMixin {
 
       print(getVerifyUserApi);
       print("User Apiiiiiiiiiiiiiiiiiiiiiii $getVerifyUserApi");
-print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn${response.body}");
-print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
+      print("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn${response.body}");
+      print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
       print("vvvvvvvvvvvvvvvvvvvvvvvvvvvv");
       var getdata = json.decode(response.body);
       bool? error = getdata["error"];
       String? msg = getdata["message"];
       await buttonController!.reverse();
-      getLoginUser();
+
       SettingProvider settingsProvider =
           Provider.of<SettingProvider>(context, listen: false);
 
@@ -248,6 +248,7 @@ print("sdfsfsfsdffdsffffffffffffffffff${response.statusCode}");
 
         if (widget.title == getTranslated(context, 'SEND_OTP_TITLE')) {
           if (!error!) {
+            getLoginUser();
             int otp = getdata["data"]["otp"];
             // setSnackbar(otp.toString());
             // Fluttertoast.showToast(msg: otp.toString(),

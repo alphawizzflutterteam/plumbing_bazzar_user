@@ -83,7 +83,9 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-  /*  final popupController = Get.put(PopupController());
+    final popupController = Get.put(PopupController());
+
+    popupController.fetchAndStartPopup();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       popupController.setContext(context);
@@ -92,7 +94,8 @@ class _HomePageState extends State<HomePage>
       // 👇 Register to RouteObserver after context is available
       final ModalRoute? modalRoute = ModalRoute.of(context);
     });
-*/
+
+    // getSlider();
     fetchSubCategories();
     fetchSubCategories1();
     fetchSubCategories2();
@@ -573,7 +576,7 @@ categorys4 != null ?
 
     return Selector<HomeProvider, bool>(
       builder: (context, data, child) {
-        // print("xxxxxxxxxxxxxxxxxxxxxxx${data?.model.video}");
+        print("xxxxxxxxxxxxxxxxxxxxxxx${pages.length}");
         return data
             ? sliderLoading()
             : Center(
@@ -4341,7 +4344,7 @@ categorys4 != null ?
     _isNetworkAvail = await isNetworkAvailable();
     if (_isNetworkAvail) {
       getSetting();
-      // getSlider();
+      getSlider();
       fetchSubCategories();
       fetchSubCategories1();
       offerCatg();
@@ -7851,7 +7854,7 @@ class _NetworkVideoWidgetState extends State<NetworkVideoWidget> {
         ? ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Container(
-              color: Colors.red,
+              color: Colors.grey.shade200,
               child: SizedBox(
                 height: height,
                 width: screenWidth,

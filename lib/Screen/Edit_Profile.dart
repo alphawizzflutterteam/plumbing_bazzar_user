@@ -6,6 +6,7 @@ import 'package:Plumbingbazzar/Helper/widgets.dart';
 import 'package:Plumbingbazzar/Model/UpdateUserModels.dart';
 import 'package:Plumbingbazzar/Provider/UserProvider.dart';
 import 'package:crop_your_image/crop_your_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:image_cropper/image_cropper.dart';
@@ -42,6 +43,31 @@ class _EditProfileState extends State<EditProfile> {
   Uint8List? imageData;
   final CropController _cropController = CropController();
 
+  // Show Image picker options
+  Future showOptions(BuildContext context) async {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        actions: [
+          CupertinoActionSheetAction(
+            child: const Text('Gallery'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              getImageGallery();
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('Camera'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              getImageCamera();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> getImageGallery() async {
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
@@ -60,28 +86,110 @@ class _EditProfileState extends State<EditProfile> {
           contentPadding: EdgeInsets.zero,
           content: SizedBox(
             width: 300,
-            height: 400,
-            child: Crop(
-              controller: _cropController,
-              image: imageData!,
-              onCropped: (croppedData) async {
-                Navigator.of(context).pop(); // close the dialog
+            height: 450,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Crop(
+                    controller: _cropController,
+                    image: imageData!,
+                    onCropped: (croppedData) async {
+                      Navigator.of(context).pop(); // close the dialog
 
-                _image = File('${(await getTemporaryDirectory()).path}/cropped_image.jpg');
-                await _image!.writeAsBytes(croppedData);
+                      _image = File(
+                        '${(await getTemporaryDirectory()).path}/cropped_image.jpg',
+                      );
+                      await _image!.writeAsBytes(croppedData);
 
-                showToast("Uploading Image");
+                      showToast("Uploading Image");
 
-                UpdateUserModels? model = await uploadImage(
-                  typeImage == "pro" ? "image" : "bank_pass",
-                  _image!.path,
-                );
+                      UpdateUserModels? model = await uploadImage(
+                        typeImage == "pro" ? "image" : "bank_pass",
+                        _image!.path,
+                      );
 
-                if (model != null && model.error == false) {
-                  showToast(model.message);
-                  setState(() {});
-                }
-              },
+                      if (model != null && model.error == false) {
+                        showToast(model.message);
+                        setState(() {});
+                      }
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _cropController.crop(); // Trigger cropping
+                    },
+                    child: const Text("Submit"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+    }
+  }
+
+  Future<void> getImageCamera() async {
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 70,
+      maxWidth: 300,
+      maxHeight: 400,
+    );
+
+    if (pickedFile != null) {
+      imageData = await pickedFile.readAsBytes();
+
+      // Show a cropping dialog/screen with crop_your_image
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: SizedBox(
+            width: 300,
+            height: 450,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Crop(
+                    controller: _cropController,
+                    image: imageData!,
+                    onCropped: (croppedData) async {
+                      Navigator.of(context).pop(); // close the dialog
+
+                      _image = File(
+                        '${(await getTemporaryDirectory()).path}/cropped_image.jpg',
+                      );
+                      await _image!.writeAsBytes(croppedData);
+
+                      showToast("Uploading Image");
+
+                      UpdateUserModels? model = await uploadImage(
+                        typeImage == "pro" ? "image" : "bank_pass",
+                        _image!.path,
+                      );
+
+                      if (model != null && model.error == false) {
+                        showToast(model.message);
+                        setState(() {});
+                      }
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _cropController.crop(); // Trigger cropping
+                    },
+                    child: const Text("Submit"),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -160,6 +268,13 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+  }
+
+  void setData(username, number, email){
+    userNameController.text = username;
+    userNumberController.text = number;
+    emailController.text = email;
   }
 
   @override
@@ -174,6 +289,7 @@ class _EditProfileState extends State<EditProfile> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 var user = snapshot.data;
+                setData(user!.date![0].username, user!.date![0].mobile, user!.date![0].email);
                 return Scaffold(
                   backgroundColor: Colors.white,
                   appBar: AppBar(
@@ -408,7 +524,7 @@ class _EditProfileState extends State<EditProfile> {
                               Stack(
                                 alignment: Alignment.bottomRight,
                                 children: [
-                                  user!.date?[0].proPic != ""
+                                  user!.date?[0].proPic != "" && user!.date?[0].proPic != null
                                       ? CircleAvatar(
                                     backgroundColor: colors.secondary,
                                     radius: 50,
@@ -429,7 +545,7 @@ class _EditProfileState extends State<EditProfile> {
                                       child: IconButton(
                                           onPressed: () {
                                             typeImage = "pro";
-                                            getImageGallery();
+                                            showOptions(context);
                                           },
                                           icon: Icon(
                                             Icons.edit,
@@ -443,7 +559,7 @@ class _EditProfileState extends State<EditProfile> {
                                 controller: userNameController,
                                 decoration: InputDecoration(
                                     hintText: "User Name",
-                                    label: Text("${user!.date![0].username}")),
+                                    label: Text("User Name")),
                               ),
                               TextField(
                                 // readOnly: true,

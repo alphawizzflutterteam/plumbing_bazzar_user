@@ -370,7 +370,7 @@ class StateAddress extends State<ManageAddress> with TickerProviderStateMixin {
             setState(() {
               if (!ISFLAT_DEL) {
                 if (oriPrice <
-                    double.parse(addressList[selectedAddress!].freeAmt!)) {
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                   delCharge = double.parse(
                       addressList[selectedAddress!].deliveryCharge!);
                 } else
@@ -383,7 +383,7 @@ class StateAddress extends State<ManageAddress> with TickerProviderStateMixin {
 
               if (!ISFLAT_DEL) {
                 if (totalPrice <
-                    double.parse(addressList[selectedAddress!].freeAmt!)) {
+                      double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                   delCharge = double.parse(
                       addressList[selectedAddress!].deliveryCharge!);
                 } else
@@ -422,7 +422,7 @@ class StateAddress extends State<ManageAddress> with TickerProviderStateMixin {
           if (!ISFLAT_DEL) {
             if (addressList.length != 1) {
               if (oriPrice <
-                  double.parse(addressList[selectedAddress!].freeAmt!)) {
+                   double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                 delCharge =
                     double.parse(addressList[selectedAddress!].deliveryCharge!);
               } else
@@ -435,7 +435,7 @@ class StateAddress extends State<ManageAddress> with TickerProviderStateMixin {
               selAddress = addressList[0].id;
 
               if (totalPrice <
-                  double.parse(addressList[selectedAddress!].freeAmt!)) {
+                    double.parse(addressList[selectedAddress!].freeAmt != "" ? addressList[selectedAddress!].freeAmt! : "0.0")) {
                 delCharge =
                     double.parse(addressList[selectedAddress!].deliveryCharge!);
               } else
